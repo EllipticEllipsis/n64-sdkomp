@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:decompals/ido-static-recomp.git
+	branch = master
+	commit = dcfe7c0ad76ef4213f809a236d2f38fa6a966a60
+	parent = baac6ddae1c4da88beecd0be811378a86e49ba6f
+	method = merge
+	cmdver = 0.4.3
