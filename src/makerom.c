@@ -39,7 +39,7 @@ extern void* fontBuf;
 extern size_t fontdataWordAlignedByteSize;
 
 
-#pragma GLOBAL_ASM("asm/functions/makerom/main.s")
+// #pragma GLOBAL_ASM("asm/functions/makerom/main.s")
 int main(int argc, unsigned char** argv);
 //{
 //    int c;
@@ -62,6 +62,302 @@ int main(int argc, unsigned char** argv);
 //        unsigned char gcordFileBuf[255];
 //    }
 //}
+
+int yyparse();
+
+static sigaction_t D_10009200 = { 0 }; // Need to correct
+static char* D_10009220 = "rom";
+static int D_10009224 = 1;
+extern int changeclock;
+extern int clockrate;
+extern int cosim;
+extern int debug;
+extern int emulator;
+extern char* fileName;
+extern char fillData;
+extern int finalromSize;
+extern int gcord;
+extern int loadMap;
+extern int nofont;
+extern int offset;
+extern char* optarg;
+extern int optind;
+extern int yyin;
+
+int main(int argc, unsigned char** argv) {
+    int sp364;
+    int pad;
+    Wave* sp35C;
+    char* sp358;
+    int sp354;
+    int pad2[2];
+    char* sp348;
+    char* sp344;
+    char* sp340;
+    int sp33C;
+    int sp338;
+    char sp238[0x100];
+    char sp138[0x100];
+    char* sp134;
+    int sp130;
+    char sp30[0x100];
+
+    sp348 = NULL;
+    sp344 = NULL;
+    sp340 = NULL;
+    sp33C = 0;
+    sp338 = 1;
+    sp130 = 0;
+    B_1000BA40 = argv[0];
+
+    if ((sp354 = sysconf(1)) == -1) {
+        fprintf(stderr, "makerom: sysconf(_SC_ARG_MAX): %s\n", sys_errlist[errno]);
+        exit(1);
+    }
+
+    if ((sp358 = malloc(sp354)) == NULL) {
+        fprintf(stderr, "malloc failed\n");
+        return -1;
+    }
+
+    sprintf(sp358, "/usr/lib/cpp -D_LANGUAGE_MAKEROM");
+    sp354 -= strlen(sp358) + 1;
+    while ((sp364 = getopt(argc, argv, "D:I:U:cdeimnor:gb:h:p:s:f:O:C:QqVv")) != -1) {
+        switch (sp364) {
+            case 0x44:
+            case 0x49:
+            case 0x55:
+                sp354 -= strlen(optarg) + 3;
+                if (sp354 <= 0) {
+                    fprintf(stderr, "makerom: too many -[DIU] flags\n");
+                    exit(1);
+                }
+                sprintf(sp358, "%s -%c%s", sp358, sp364, optarg);
+                continue;
+            case 0x63:
+                cosim = 1;
+                continue;
+            case 0x64:
+                debug = 1;
+                continue;
+            case 0x67:
+                gcord = 1;
+                continue;
+            case 0x6B:
+                keep_going = 1;
+                continue;
+            case 0x65:
+                emulator = 1;
+                continue;
+            case 0x6D:
+                loadMap = 1;
+                continue;
+            case 0x6E:
+                nofont = 1;
+                continue;
+            case 0x6F:
+                D_10009224 = 0;
+                continue;
+            case 0x72:
+                D_10009220 = optarg;
+                continue;
+            case 0x62:
+                sp348 = optarg;
+                continue;
+            case 0x68:
+                sp344 = optarg;
+                continue;
+            case 0x70:
+                sp340 = optarg;
+                continue;
+            case 0x73:
+                finalromSize = strtol(optarg, 0, 0);
+                continue;
+            case 0x66:
+                fillData = strtol(optarg, 0, 0);
+                continue;
+            case 0x4F:
+                offset = strtol(optarg, 0, 0);
+                continue;
+            case 0x43:
+                changeclock = 1;
+                clockrate = strtol(optarg, 0, 0);
+                if (clockrate == 0) {
+                    clockrate = 0x03A07F50;
+                }
+                continue;
+            case 0x3F:
+                usage();
+                exit(1);
+            case 0x51:
+            case 0x71:
+                sp130 = 1;
+                continue;
+            case 0x56:
+            case 0x76:
+                printVersion();
+                exit(1);
+        }
+    }
+
+    if ((argc - optind) != 1) {
+        usage();
+        exit(1);
+    }
+    if ((cosim + emulator) > 1) {
+        fprintf(stderr, "makerom: only specify one of -c, -e, or -i\n");
+        exit(1);
+    }
+    getOsVersion();
+    if (sp130 == 0) {
+        printVersion();
+    }
+    getBootFile(sp348);
+    getPif2BootFile(sp340);
+    getRomheaderFile(sp344);
+    getFontDataFile(sp33C);
+
+    if ((unlink(D_10009220) == -1) && (errno != 2)) {
+        fprintf(stderr, "makerom: %s: %s\n", D_10009220, sys_errlist[errno]);
+        exit(1);
+    }
+
+    fileName = argv[optind];
+    if ((yyin = fopen(fileName, "r")) == 0) {
+        fprintf(stderr, "makerom: %s: %s\n", fileName, sys_errlist[errno]);
+        exit(1);
+    }
+    fclose(yyin);
+
+    sp354 -= strlen(fileName);
+    if (sp354 <= 0) {
+        fprintf(stderr, "makerom: cpp command line too long\n");
+        exit(1);
+    }
+
+    sprintf(sp358, "%s %s", sp358, fileName);
+    if ((yyin = popen(sp358, "r")) == 0) {
+        fprintf(stderr, "makerom: could not run cpp on %s: %s\n", fileName, sys_errlist[errno]);
+        exit(1);
+    }
+
+    if (yyparse() != 0) {
+        exit(1);
+    }
+
+    if (pclose(yyin) != 0) {
+        exit(1);
+    }
+
+    if (scanSegments() == -1) {
+        exit(1);
+    }
+
+    if (checkSizes() != 0) {
+        sp338 = 0;
+    }
+
+    if ((D_10009224 != 0) && (checkOverlaps() != 0)) {
+        sp338 = 0;
+    }
+
+    nameTempFiles();
+    sigaction(1, &D_10009200, 0);
+    sigaction(2, &D_10009200, 0);
+    sigaction(0xF, &D_10009200, 0);
+
+    if (debug) {
+        printf("Creating segment symbol source file in %s\n", B_1000B540);
+    }
+
+    if (createSegmentSymbols(B_1000B540, B_1000B640) == -1) {
+        unlinkTempFiles();
+        exit(1);
+    }
+
+    for (sp35C = waveList; sp35C != NULL; sp35C = sp35C->next) {
+        doWave(sp35C);
+    }
+
+    if ((sp134 = getenv("ROOT")) == NULL) {
+        sp134 = "/";
+    }
+
+    if (irixVersion > 0) {
+        if (checkIdoVersion(sp134) < 2) {
+            fprintf(stderr, "makerom: This IDO version is not compatible with the\n");
+            fprintf(stderr, "         Nintendo64 development environment on this\n");
+            fprintf(stderr, "         version of IRIX.\n");
+            exit(1);
+        }
+        sprintf(sp238, "%s/usr/sbin/u64check -fmulmul:check:noforce:norepair", sp134);
+    } else {
+        sprintf(sp238, "%s/usr/sbin/r4300_check", sp134);
+    }
+
+    if (debug) {
+        printf("Checking fmulmul status\n");
+    }
+
+    for (sp35C = waveList; sp35C != NULL; sp35C = sp35C->next) {
+        sprintf(sp138, "%s %s", &sp238, sp35C->name);
+        if (debug) {
+            printf("  %s\n", sp138);
+        }
+        if ((execCommand(sp138) == -1) && !keep_going) {
+            unlinkTempFiles();
+            exit(1);
+        }        
+    }
+
+    if (gcord != 0) {
+        sprintf(sp238, "%s/usr/lib/PR/gcord ", sp134);
+        for (sp35C = waveList; sp35C != NULL; sp35C = sp35C->next) {
+            sprintf(sp138, "%s %s", sp238, sp35C->name);
+            if (debug) {
+                printf("makerom: %s\n", sp138);
+            }
+            if ((execCommand(sp138) == -1) && !keep_going) {
+                unlinkTempFiles();
+                exit(1);
+            }
+            strcat(strcpy(sp30, sp35C->name), ".cord");
+            strcpy(sp35C->name, sp30);            
+        }
+    }
+
+    if (debug) {
+        printf("Creating entry source file in %s\n", &B_1000B740);
+    }
+    if (createEntryFile(&B_1000B740, &B_1000B840) == -1) {
+        unlinkTempFiles();
+        exit(1);
+    }
+
+    if (sp338 != 0) {
+        if (debug) {
+            printf("Extracting sections from ELF wave files");
+            printf(" to create ROM image in %s\n", D_10009220);
+        }
+        if (createRomImage(D_10009220, &B_1000B840) == -1) {
+            unlinkTempFiles();
+            exit(1);
+        }
+    }
+    unlinkTempFiles();
+    if (bootBuf != NULL) {
+        free(bootBuf);
+    }
+    if (headerBuf != NULL) {
+        free(headerBuf);
+    }
+    if (fontBuf != NULL) {
+        free(fontBuf);
+    }
+
+    exit(sp338 ? 0 : 1);
+    return 0;
+}
 
 // #pragma GLOBAL_ASM("asm/functions/makerom/usage.s")
 void usage();
