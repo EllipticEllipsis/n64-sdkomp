@@ -31,9 +31,12 @@ extern int keep_going;
 extern Wave* waveList;
 extern size_t* bootBuf;
 extern int bootWordAlignedByteSize;
-
-
-
+extern size_t* pif2bootBuf;
+extern int pif2bootWordAlignedByteSize;
+extern char* headerBuf;
+extern int headerWordAlignedByteSize;
+extern void* fontBuf;
+extern size_t fontdataWordAlignedByteSize;
 
 
 #pragma GLOBAL_ASM("asm/functions/makerom/main.s")
@@ -222,7 +225,7 @@ void getBootFile(unsigned char* bootFileName) {
 }
 
 
-#pragma GLOBAL_ASM("asm/functions/makerom/getPif2BootFile.s")
+// #pragma GLOBAL_ASM("asm/functions/makerom/getPif2BootFile.s")
 void getPif2BootFile(unsigned char* pif2bootFileName);
 //{
 //    int pif2bootFd;
@@ -230,8 +233,43 @@ void getPif2BootFile(unsigned char* pif2bootFileName);
 //    stat buf;
 //    unsigned char errMessage[255];
 //}
+void getPif2BootFile(unsigned char* pif2bootFileName) {
+    int pif2bootFd;
+    char scratchFileName[0x100];
+    struct stat buf;
+    char errMessage[0x100];
 
-#pragma GLOBAL_ASM("asm/functions/makerom/getRomheaderFile.s")
+    if ((pif2bootFileName == NULL) && (gloadFindFile(scratchFileName, "/usr/lib/PR", "pif2Boot") != NULL)) {
+        pif2bootFileName = scratchFileName;
+    }
+    if (pif2bootFileName != NULL) {
+        if ((pif2bootFd = open(pif2bootFileName, 0x800)) < 0) {
+            sprintf(errMessage, "%s: unable to open %s", B_1000BA40, pif2bootFileName);
+            perror(errMessage);
+            exit(1);
+        }
+        if (fstat(pif2bootFd, &buf) < 0) {
+            sprintf(errMessage, "%s unable to stat %s", B_1000BA40, pif2bootFileName);
+            perror(errMessage);
+            close(pif2bootFd);
+            exit(1);
+        }
+
+        pif2bootBuf = malloc(buf.st_size);
+        if (pif2bootBuf == NULL) {
+            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", B_1000BA40, buf.st_size);
+            close(pif2bootFd);
+            exit(1);
+        }
+        close(pif2bootFd);
+        pif2bootWordAlignedByteSize = readCoff(pif2bootFileName, pif2bootBuf);
+    } else {
+        pif2bootBuf = NULL;
+    }
+}
+
+
+// #pragma GLOBAL_ASM("asm/functions/makerom/getRomheaderFile.s")
 void getRomheaderFile(unsigned char* headerFileName);
 //{
 //    int headerFd;
@@ -244,8 +282,82 @@ void getRomheaderFile(unsigned char* headerFileName);
 //    int readPtr;
 //    int retval;
 //}
+void getRomheaderFile(unsigned char* headerFileName) {
+    int headerFd;
+    char scratchFileName[0x100];
+    struct stat buf;
+    char errMessage[0x100];
+    char nibbleString[2];
+    int nibbleVal;
+    int i;
+    int readPtr;
+    int retval;
 
-#pragma GLOBAL_ASM("asm/functions/makerom/getFontDataFile.s")
+    if ((headerFileName == NULL) && (gloadFindFile(scratchFileName, "/usr/lib/PR", "romheader") != NULL)) {
+        headerFileName = scratchFileName;
+    }
+    if (headerFileName != NULL) {
+        if ((headerFd = open(headerFileName, 0x800)) < 0) {
+            sprintf(errMessage, "%s unable to open %s", B_1000BA40, headerFileName);
+            perror(errMessage);
+            exit(1);
+        }
+        if (fstat(headerFd, &buf) < 0) {
+            sprintf(errMessage, "%s unable to stat %s", B_1000BA40, headerFileName);
+            perror(errMessage);
+            close(headerFd);
+            exit(1);
+        }
+        headerWordAlignedByteSize = buf.st_size;
+        headerBuf = malloc(headerWordAlignedByteSize);
+        if (headerBuf == NULL) {
+            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", B_1000BA40, headerWordAlignedByteSize);
+            close(headerFd);
+            exit(1);
+        }
+
+        nibbleString[1] = '\0';
+        for (i = 0, readPtr = 0; readPtr < headerWordAlignedByteSize; i++, readPtr++) {
+            retval = read(headerFd, nibbleString, 1);
+            if (retval != 1) {
+                fprintf(stderr, "%s: short read from %s.\n", B_1000BA40, headerFileName);
+                free(headerBuf);
+                close(headerFd);
+                exit(1);
+            }
+
+            if (nibbleString[0] == 0xA) {
+                if (++readPtr < headerWordAlignedByteSize) {
+                    retval = read(headerFd, nibbleString, 1);
+                    if (retval != 1) {
+                        fprintf(stderr, "%s: short read from %s.\n", B_1000BA40, headerFileName);
+                        free(headerBuf);
+                        close(headerFd);
+                        exit(1);
+                    }
+                }
+            }
+
+            nibbleVal = strtol(nibbleString, NULL, 16);
+            if (i % 2) {
+                headerBuf[i >> 1] |= nibbleVal;
+            } else {
+                headerBuf[i >> 1] = nibbleVal << 4;
+            }
+        }
+        headerWordAlignedByteSize = (i - 1) >> 1;
+        if (headerWordAlignedByteSize & 3) {
+            headerWordAlignedByteSize += 4;
+            headerWordAlignedByteSize &= ~3;
+        }
+        close(headerFd);
+    } else {
+        headerBuf = NULL;
+    }
+}
+
+
+// #pragma GLOBAL_ASM("asm/functions/makerom/getFontDataFile.s")
 void getFontDataFile(unsigned char* fontFileName);
 //{
 //    int fontFd;
@@ -253,8 +365,49 @@ void getFontDataFile(unsigned char* fontFileName);
 //    stat buf;
 //    unsigned char errMessage[255];
 //}
+void getFontDataFile(unsigned char* fontFileName) {
+    int fontFd;
+    char scratchFileName[0x100];
+    struct stat buf;
+    char errMessage[0x100];
 
-#pragma GLOBAL_ASM("asm/functions/makerom/gloadFindFile.s")
+    if (gloadFindFile(scratchFileName, "/usr/lib/PR", "font") != NULL) {
+        fontFileName = scratchFileName;
+    }
+    if (fontFileName != NULL) {
+        if ((fontFd = open(fontFileName, 0x800)) < 0) {
+            sprintf(errMessage, "%s: unable to open %s", B_1000BA40, fontFileName);
+            perror(errMessage);
+            exit(1);
+        }
+        if (fstat(fontFd, &buf) < 0) {
+            sprintf(errMessage, "%s unable to stat %s", B_1000BA40, fontFileName);
+            perror(errMessage);
+            close(fontFd);
+            exit(1);
+        }
+
+        fontBuf = malloc(buf.st_size);
+        if (fontBuf == NULL) {
+            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", B_1000BA40, buf.st_size);
+            close(fontFd);
+            exit(1);
+        }
+        fontdataWordAlignedByteSize = buf.st_size;
+        if (read(fontFd, fontBuf, fontdataWordAlignedByteSize) != fontdataWordAlignedByteSize) {
+            sprintf(errMessage, "%s unable to read %s", B_1000BA40, fontFileName);
+            perror(errMessage);
+            close(fontFd);
+            exit(1);
+        }
+        close(fontFd);
+    } else {
+        fontBuf = NULL;
+    }
+}
+
+
+// #pragma GLOBAL_ASM("asm/functions/makerom/gloadFindFile.s")
 unsigned char* gloadFindFile(unsigned char* fullpath, unsigned char* postRootSuffix, unsigned char* fname);
 //{
 //    unsigned char* rootname;
@@ -262,6 +415,47 @@ unsigned char* gloadFindFile(unsigned char* fullpath, unsigned char* postRootSuf
 //    int fd;
 //    int try;
 //}
+unsigned char* gloadFindFile(unsigned char* fullpath, unsigned  char* postRootSuffix, unsigned char* fname) {
+    char* rootname;
+    char* rootpath;
+    int fd; // Unused
+    int try;
+
+    for (try = 0; try < 3; try++) {
+        fullpath[0] = '\0';
+
+        switch (try) {
+            case 0:
+                rootname = "ROOT";
+                break;
+            case 1:
+                rootname = "WORKAREA";
+                break;
+            case 2:
+                rootname = NULL;
+                break;
+        }
+
+        if (rootname != NULL) {
+            if ((rootpath = getenv(rootname)) == NULL) {
+                continue;
+            }
+            strcat(fullpath, rootpath);
+        }
+        if (postRootSuffix != NULL) {
+            strcat(fullpath, postRootSuffix);
+            strcat(fullpath, "/");
+        }
+        strcat(fullpath, fname);
+        if (access(fullpath, 4) == 0) {
+            return fullpath;
+        }
+    }
+    fprintf(stderr, "gloadFindFile: can't find file %s\n", fullpath);
+    fullpath[0] = '\0';
+    return NULL;
+}
+
 
 int createElspec(Wave*);
 int runLinker(Wave*, unsigned char*, unsigned char*);
