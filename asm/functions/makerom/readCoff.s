@@ -22,9 +22,9 @@ glabel readCoff # 33
 /* 0108E0 004108E0 8F818758 */  lw          $at, %got(SName)($gp)
 /* 0108E4 004108E4 25EF5E90 */  addiu       $t7, $t7, %lo(STR_10005E90)
 /* 0108E8 004108E8 AC2F0000 */  sw          $t7, 0x0($at)
-/* 0108EC 004108EC 8F998018 */  lw          $t9, %got(func_0041093C)($gp)
+/* 0108EC 004108EC 8F998018 */  lw          $t9, %got(Extract)($gp)
 /* 0108F0 004108F0 8FA40034 */  lw          $a0, 0x34($sp)
-/* 0108F4 004108F4 2739093C */  addiu       $t9, $t9, %lo(func_0041093C)
+/* 0108F4 004108F4 2739093C */  addiu       $t9, $t9, %lo(Extract)
 /* 0108F8 004108F8 0320F809 */  jalr        $t9
 /* 0108FC 004108FC 00000000 */   nop
 /* 010900 00410900 8FBC0018 */  lw          $gp, 0x18($sp)

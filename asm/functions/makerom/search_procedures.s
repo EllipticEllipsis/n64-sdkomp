@@ -56,10 +56,10 @@ glabel search_procedures # 619
 /* 03D224 0043D224 8D260004 */  lw          $a2, 0x4($t1)
 /* 03D228 0043D228 50D60019 */  beql        $a2, $s6, .L0043D290
 /* 03D22C 0043D22C 26310001 */   addiu      $s1, $s1, 0x1
-/* 03D230 0043D230 8F998024 */  lw          $t9, %got(func_0043C670)($gp)
+/* 03D230 0043D230 8F998024 */  lw          $t9, %got(file_symbol_name)($gp)
 /* 03D234 0043D234 8E4A00D0 */  lw          $t2, 0xD0($s2)
 /* 03D238 0043D238 00D33021 */  addu        $a2, $a2, $s3
-/* 03D23C 0043D23C 2739C670 */  addiu       $t9, $t9, %lo(func_0043C670)
+/* 03D23C 0043D23C 2739C670 */  addiu       $t9, $t9, %lo(file_symbol_name)
 /* 03D240 0043D240 0320F809 */  jalr        $t9
 /* 03D244 0043D244 028A2821 */   addu       $a1, $s4, $t2
 /* 03D248 0043D248 8FBC0034 */  lw          $gp, 0x34($sp)

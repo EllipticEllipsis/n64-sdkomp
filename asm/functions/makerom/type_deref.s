@@ -19,13 +19,13 @@ glabel type_deref # 635
 /* 03E88C 0043E88C ACAF0028 */  sw          $t7, 0x28($a1)
 /* 03E890 0043E890 00401825 */  move        $v1, $v0
 .L0043E894:
-/* 03E894 0043E894 8F998024 */  lw          $t9, %got(func_0043E1C8)($gp)
+/* 03E894 0043E894 8F998024 */  lw          $t9, %got(set_bt)($gp)
 /* 03E898 0043E898 ACA00010 */  sw          $zero, 0x10($a1)
 /* 03E89C 0043E89C ACA00044 */  sw          $zero, 0x44($a1)
 /* 03E8A0 0043E8A0 ACA00018 */  sw          $zero, 0x18($a1)
 /* 03E8A4 0043E8A4 ACA00014 */  sw          $zero, 0x14($a1)
 /* 03E8A8 0043E8A8 ACA30004 */  sw          $v1, 0x4($a1)
-/* 03E8AC 0043E8AC 2739E1C8 */  addiu       $t9, $t9, %lo(func_0043E1C8)
+/* 03E8AC 0043E8AC 2739E1C8 */  addiu       $t9, $t9, %lo(set_bt)
 /* 03E8B0 0043E8B0 0320F809 */  jalr        $t9
 /* 03E8B4 0043E8B4 AFA50024 */   sw         $a1, 0x24($sp)
 /* 03E8B8 0043E8B8 8FBC0018 */  lw          $gp, 0x18($sp)

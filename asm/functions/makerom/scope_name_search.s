@@ -85,10 +85,10 @@ glabel scope_name_search # 615
 /* 03C9E0 0043C9E0 8FBC003C */  lw          $gp, 0x3C($sp)
 /* 03C9E4 0043C9E4 0040A025 */  move        $s4, $v0
 /* 03C9E8 0043C9E8 02402025 */  move        $a0, $s2
-/* 03C9EC 0043C9EC 8F998024 */  lw          $t9, %got(func_0043C670)($gp)
+/* 03C9EC 0043C9EC 8F998024 */  lw          $t9, %got(file_symbol_name)($gp)
 /* 03C9F0 0043C9F0 8FA500D4 */  lw          $a1, 0xD4($sp)
 /* 03C9F4 0043C9F4 02603025 */  move        $a2, $s3
-/* 03C9F8 0043C9F8 2739C670 */  addiu       $t9, $t9, %lo(func_0043C670)
+/* 03C9F8 0043C9F8 2739C670 */  addiu       $t9, $t9, %lo(file_symbol_name)
 /* 03C9FC 0043C9FC 0320F809 */  jalr        $t9
 /* 03CA00 0043CA00 00000000 */   nop
 /* 03CA04 0043CA04 8FBC003C */  lw          $gp, 0x3C($sp)
@@ -184,10 +184,10 @@ glabel scope_name_search # 615
 /* 03CB54 0043CB54 24010009 */  addiu       $at, $zero, 0x9
 /* 03CB58 0043CB58 1441000B */  bne         $v0, $at, .L0043CB88
 /* 03CB5C 0043CB5C 8FBC003C */   lw         $gp, 0x3C($sp)
-/* 03CB60 0043CB60 8F998024 */  lw          $t9, %got(func_0043C7D8)($gp)
+/* 03CB60 0043CB60 8F998024 */  lw          $t9, %got(symbol_check_enum)($gp)
 /* 03CB64 0043CB64 02402025 */  move        $a0, $s2
 /* 03CB68 0043CB68 8FA500D4 */  lw          $a1, 0xD4($sp)
-/* 03CB6C 0043CB6C 2739C7D8 */  addiu       $t9, $t9, %lo(func_0043C7D8)
+/* 03CB6C 0043CB6C 2739C7D8 */  addiu       $t9, $t9, %lo(symbol_check_enum)
 /* 03CB70 0043CB70 0320F809 */  jalr        $t9
 /* 03CB74 0043CB74 02003025 */   move       $a2, $s0
 /* 03CB78 0043CB78 1440003B */  bnez        $v0, .L0043CC68

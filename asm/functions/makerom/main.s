@@ -475,8 +475,8 @@ glabel main # 2
 /* 009C28 00409C28 10000019 */  b           .L00409C90
 /* 009C2C 00409C2C 00000000 */   nop
 .L00409C30:
-/* 009C30 00409C30 8F998018 */  lw          $t9, %got(func_0040A700)($gp)
-/* 009C34 00409C34 2739A700 */  addiu       $t9, $t9, %lo(func_0040A700)
+/* 009C30 00409C30 8F998018 */  lw          $t9, %got(usage)($gp)
+/* 009C34 00409C34 2739A700 */  addiu       $t9, $t9, %lo(usage)
 /* 009C38 00409C38 0320F809 */  jalr        $t9
 /* 009C3C 00409C3C 00000000 */   nop
 /* 009C40 00409C40 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -491,8 +491,8 @@ glabel main # 2
 /* 009C60 00409C60 1000000B */  b           .L00409C90
 /* 009C64 00409C64 00000000 */   nop
 .L00409C68:
-/* 009C68 00409C68 8F998018 */  lw          $t9, %got(func_0040ABA0)($gp)
-/* 009C6C 00409C6C 2739ABA0 */  addiu       $t9, $t9, %lo(func_0040ABA0)
+/* 009C68 00409C68 8F998018 */  lw          $t9, %got(printVersion)($gp)
+/* 009C6C 00409C6C 2739ABA0 */  addiu       $t9, $t9, %lo(printVersion)
 /* 009C70 00409C70 0320F809 */  jalr        $t9
 /* 009C74 00409C74 00000000 */   nop
 /* 009C78 00409C78 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -522,8 +522,8 @@ glabel main # 2
 /* 009CD0 00409CD0 016C6823 */  subu        $t5, $t3, $t4
 /* 009CD4 00409CD4 11A1000B */  beq         $t5, $at, .L00409D04
 /* 009CD8 00409CD8 00000000 */   nop
-/* 009CDC 00409CDC 8F998018 */  lw          $t9, %got(func_0040A700)($gp)
-/* 009CE0 00409CE0 2739A700 */  addiu       $t9, $t9, %lo(func_0040A700)
+/* 009CDC 00409CDC 8F998018 */  lw          $t9, %got(usage)($gp)
+/* 009CE0 00409CE0 2739A700 */  addiu       $t9, $t9, %lo(usage)
 /* 009CE4 00409CE4 0320F809 */  jalr        $t9
 /* 009CE8 00409CE8 00000000 */   nop
 /* 009CEC 00409CEC 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -554,41 +554,41 @@ glabel main # 2
 /* 009D4C 00409D4C 00000000 */   nop
 /* 009D50 00409D50 8FBC0020 */  lw          $gp, 0x20($sp)
 .L00409D54:
-/* 009D54 00409D54 8F998018 */  lw          $t9, %got(func_0040A810)($gp)
-/* 009D58 00409D58 2739A810 */  addiu       $t9, $t9, %lo(func_0040A810)
+/* 009D54 00409D54 8F998018 */  lw          $t9, %got(getOsVersion)($gp)
+/* 009D58 00409D58 2739A810 */  addiu       $t9, $t9, %lo(getOsVersion)
 /* 009D5C 00409D5C 0320F809 */  jalr        $t9
 /* 009D60 00409D60 00000000 */   nop
 /* 009D64 00409D64 8FBC0020 */  lw          $gp, 0x20($sp)
 /* 009D68 00409D68 8FB90130 */  lw          $t9, 0x130($sp)
 /* 009D6C 00409D6C 17200006 */  bnez        $t9, .L00409D88
 /* 009D70 00409D70 00000000 */   nop
-/* 009D74 00409D74 8F998018 */  lw          $t9, %got(func_0040ABA0)($gp)
-/* 009D78 00409D78 2739ABA0 */  addiu       $t9, $t9, %lo(func_0040ABA0)
+/* 009D74 00409D74 8F998018 */  lw          $t9, %got(printVersion)($gp)
+/* 009D78 00409D78 2739ABA0 */  addiu       $t9, $t9, %lo(printVersion)
 /* 009D7C 00409D7C 0320F809 */  jalr        $t9
 /* 009D80 00409D80 00000000 */   nop
 /* 009D84 00409D84 8FBC0020 */  lw          $gp, 0x20($sp)
 .L00409D88:
-/* 009D88 00409D88 8F998018 */  lw          $t9, %got(func_0040AC0C)($gp)
+/* 009D88 00409D88 8F998018 */  lw          $t9, %got(getBootFile)($gp)
 /* 009D8C 00409D8C 8FA40348 */  lw          $a0, 0x348($sp)
-/* 009D90 00409D90 2739AC0C */  addiu       $t9, $t9, %lo(func_0040AC0C)
+/* 009D90 00409D90 2739AC0C */  addiu       $t9, $t9, %lo(getBootFile)
 /* 009D94 00409D94 0320F809 */  jalr        $t9
 /* 009D98 00409D98 00000000 */   nop
 /* 009D9C 00409D9C 8FBC0020 */  lw          $gp, 0x20($sp)
-/* 009DA0 00409DA0 8F998018 */  lw          $t9, %got(func_0040AE34)($gp)
+/* 009DA0 00409DA0 8F998018 */  lw          $t9, %got(getPif2BootFile)($gp)
 /* 009DA4 00409DA4 8FA40340 */  lw          $a0, 0x340($sp)
-/* 009DA8 00409DA8 2739AE34 */  addiu       $t9, $t9, %lo(func_0040AE34)
+/* 009DA8 00409DA8 2739AE34 */  addiu       $t9, $t9, %lo(getPif2BootFile)
 /* 009DAC 00409DAC 0320F809 */  jalr        $t9
 /* 009DB0 00409DB0 00000000 */   nop
 /* 009DB4 00409DB4 8FBC0020 */  lw          $gp, 0x20($sp)
-/* 009DB8 00409DB8 8F998018 */  lw          $t9, %got(func_0040B05C)($gp)
+/* 009DB8 00409DB8 8F998018 */  lw          $t9, %got(getRomheaderFile)($gp)
 /* 009DBC 00409DBC 8FA40344 */  lw          $a0, 0x344($sp)
-/* 009DC0 00409DC0 2739B05C */  addiu       $t9, $t9, %lo(func_0040B05C)
+/* 009DC0 00409DC0 2739B05C */  addiu       $t9, $t9, %lo(getRomheaderFile)
 /* 009DC4 00409DC4 0320F809 */  jalr        $t9
 /* 009DC8 00409DC8 00000000 */   nop
 /* 009DCC 00409DCC 8FBC0020 */  lw          $gp, 0x20($sp)
-/* 009DD0 00409DD0 8F998018 */  lw          $t9, %got(func_0040B4E8)($gp)
+/* 009DD0 00409DD0 8F998018 */  lw          $t9, %got(getFontDataFile)($gp)
 /* 009DD4 00409DD4 8FA4033C */  lw          $a0, 0x33C($sp)
-/* 009DD8 00409DD8 2739B4E8 */  addiu       $t9, $t9, %lo(func_0040B4E8)
+/* 009DD8 00409DD8 2739B4E8 */  addiu       $t9, $t9, %lo(getFontDataFile)
 /* 009DDC 00409DDC 0320F809 */  jalr        $t9
 /* 009DE0 00409DE0 00000000 */   nop
 /* 009DE4 00409DE4 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -793,8 +793,8 @@ glabel main # 2
 /* 00A0E0 0040A0E0 8FBC0020 */   lw         $gp, 0x20($sp)
 /* 00A0E4 0040A0E4 AFA00338 */  sw          $zero, 0x338($sp)
 .L0040A0E8:
-/* 00A0E8 0040A0E8 8F998018 */  lw          $t9, %got(func_0040BA54)($gp)
-/* 00A0EC 0040A0EC 2739BA54 */  addiu       $t9, $t9, %lo(func_0040BA54)
+/* 00A0E8 0040A0E8 8F998018 */  lw          $t9, %got(nameTempFiles)($gp)
+/* 00A0EC 0040A0EC 2739BA54 */  addiu       $t9, $t9, %lo(nameTempFiles)
 /* 00A0F0 0040A0F0 0320F809 */  jalr        $t9
 /* 00A0F4 0040A0F4 00000000 */   nop
 /* 00A0F8 0040A0F8 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -840,8 +840,8 @@ glabel main # 2
 /* 00A194 0040A194 2401FFFF */  addiu       $at, $zero, -0x1
 /* 00A198 0040A198 1441000B */  bne         $v0, $at, .L0040A1C8
 /* 00A19C 0040A19C 8FBC0020 */   lw         $gp, 0x20($sp)
-/* 00A1A0 0040A1A0 8F998018 */  lw          $t9, %got(func_0040BC54)($gp)
-/* 00A1A4 0040A1A4 2739BC54 */  addiu       $t9, $t9, %lo(func_0040BC54)
+/* 00A1A0 0040A1A0 8F998018 */  lw          $t9, %got(unlinkTempFiles)($gp)
+/* 00A1A4 0040A1A4 2739BC54 */  addiu       $t9, $t9, %lo(unlinkTempFiles)
 /* 00A1A8 0040A1A8 0320F809 */  jalr        $t9
 /* 00A1AC 0040A1AC 00000000 */   nop
 /* 00A1B0 0040A1B0 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -856,9 +856,9 @@ glabel main # 2
 /* 00A1D0 0040A1D0 11A0000B */  beqz        $t5, .L0040A200
 /* 00A1D4 0040A1D4 AFAD035C */   sw         $t5, 0x35C($sp)
 .L0040A1D8:
-/* 00A1D8 0040A1D8 8F998018 */  lw          $t9, %got(func_0040B93C)($gp)
+/* 00A1D8 0040A1D8 8F998018 */  lw          $t9, %got(doWave)($gp)
 /* 00A1DC 0040A1DC 8FA4035C */  lw          $a0, 0x35C($sp)
-/* 00A1E0 0040A1E0 2739B93C */  addiu       $t9, $t9, %lo(func_0040B93C)
+/* 00A1E0 0040A1E0 2739B93C */  addiu       $t9, $t9, %lo(doWave)
 /* 00A1E4 0040A1E4 0320F809 */  jalr        $t9
 /* 00A1E8 0040A1E8 00000000 */   nop
 /* 00A1EC 0040A1EC 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -884,9 +884,9 @@ glabel main # 2
 /* 00A234 0040A234 8D290000 */  lw          $t1, 0x0($t1)
 /* 00A238 0040A238 1920002B */  blez        $t1, .L0040A2E8
 /* 00A23C 0040A23C 00000000 */   nop
-/* 00A240 0040A240 8F998018 */  lw          $t9, %got(func_0040A9AC)($gp)
+/* 00A240 0040A240 8F998018 */  lw          $t9, %got(checkIdoVersion)($gp)
 /* 00A244 0040A244 8FA40134 */  lw          $a0, 0x134($sp)
-/* 00A248 0040A248 2739A9AC */  addiu       $t9, $t9, %lo(func_0040A9AC)
+/* 00A248 0040A248 2739A9AC */  addiu       $t9, $t9, %lo(checkIdoVersion)
 /* 00A24C 0040A24C 0320F809 */  jalr        $t9
 /* 00A250 0040A250 00000000 */   nop
 /* 00A254 0040A254 28410002 */  slti        $at, $v0, 0x2
@@ -982,8 +982,8 @@ glabel main # 2
 /* 00A3A4 0040A3A4 8DAD0000 */  lw          $t5, 0x0($t5)
 /* 00A3A8 0040A3A8 15A0000B */  bnez        $t5, .L0040A3D8
 /* 00A3AC 0040A3AC 00000000 */   nop
-/* 00A3B0 0040A3B0 8F998018 */  lw          $t9, %got(func_0040BC54)($gp)
-/* 00A3B4 0040A3B4 2739BC54 */  addiu       $t9, $t9, %lo(func_0040BC54)
+/* 00A3B0 0040A3B0 8F998018 */  lw          $t9, %got(unlinkTempFiles)($gp)
+/* 00A3B4 0040A3B4 2739BC54 */  addiu       $t9, $t9, %lo(unlinkTempFiles)
 /* 00A3B8 0040A3B8 0320F809 */  jalr        $t9
 /* 00A3BC 0040A3BC 00000000 */   nop
 /* 00A3C0 0040A3C0 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -1045,8 +1045,8 @@ glabel main # 2
 /* 00A490 0040A490 8D6B0000 */  lw          $t3, 0x0($t3)
 /* 00A494 0040A494 1560000B */  bnez        $t3, .L0040A4C4
 /* 00A498 0040A498 00000000 */   nop
-/* 00A49C 0040A49C 8F998018 */  lw          $t9, %got(func_0040BC54)($gp)
-/* 00A4A0 0040A4A0 2739BC54 */  addiu       $t9, $t9, %lo(func_0040BC54)
+/* 00A49C 0040A49C 8F998018 */  lw          $t9, %got(unlinkTempFiles)($gp)
+/* 00A4A0 0040A4A0 2739BC54 */  addiu       $t9, $t9, %lo(unlinkTempFiles)
 /* 00A4A4 0040A4A4 0320F809 */  jalr        $t9
 /* 00A4A8 0040A4A8 00000000 */   nop
 /* 00A4AC 0040A4AC 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -1101,8 +1101,8 @@ glabel main # 2
 /* 00A564 0040A564 2401FFFF */  addiu       $at, $zero, -0x1
 /* 00A568 0040A568 1441000B */  bne         $v0, $at, .L0040A598
 /* 00A56C 0040A56C 8FBC0020 */   lw         $gp, 0x20($sp)
-/* 00A570 0040A570 8F998018 */  lw          $t9, %got(func_0040BC54)($gp)
-/* 00A574 0040A574 2739BC54 */  addiu       $t9, $t9, %lo(func_0040BC54)
+/* 00A570 0040A570 8F998018 */  lw          $t9, %got(unlinkTempFiles)($gp)
+/* 00A574 0040A574 2739BC54 */  addiu       $t9, $t9, %lo(unlinkTempFiles)
 /* 00A578 0040A578 0320F809 */  jalr        $t9
 /* 00A57C 0040A57C 00000000 */   nop
 /* 00A580 0040A580 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -1141,8 +1141,8 @@ glabel main # 2
 /* 00A5FC 0040A5FC 2401FFFF */  addiu       $at, $zero, -0x1
 /* 00A600 0040A600 1441000B */  bne         $v0, $at, .L0040A630
 /* 00A604 0040A604 8FBC0020 */   lw         $gp, 0x20($sp)
-/* 00A608 0040A608 8F998018 */  lw          $t9, %got(func_0040BC54)($gp)
-/* 00A60C 0040A60C 2739BC54 */  addiu       $t9, $t9, %lo(func_0040BC54)
+/* 00A608 0040A608 8F998018 */  lw          $t9, %got(unlinkTempFiles)($gp)
+/* 00A60C 0040A60C 2739BC54 */  addiu       $t9, $t9, %lo(unlinkTempFiles)
 /* 00A610 0040A610 0320F809 */  jalr        $t9
 /* 00A614 0040A614 00000000 */   nop
 /* 00A618 0040A618 8FBC0020 */  lw          $gp, 0x20($sp)
@@ -1152,8 +1152,8 @@ glabel main # 2
 /* 00A628 0040A628 00000000 */   nop
 /* 00A62C 0040A62C 8FBC0020 */  lw          $gp, 0x20($sp)
 .L0040A630:
-/* 00A630 0040A630 8F998018 */  lw          $t9, %got(func_0040BC54)($gp)
-/* 00A634 0040A634 2739BC54 */  addiu       $t9, $t9, %lo(func_0040BC54)
+/* 00A630 0040A630 8F998018 */  lw          $t9, %got(unlinkTempFiles)($gp)
+/* 00A634 0040A634 2739BC54 */  addiu       $t9, $t9, %lo(unlinkTempFiles)
 /* 00A638 0040A638 0320F809 */  jalr        $t9
 /* 00A63C 0040A63C 00000000 */   nop
 /* 00A640 0040A640 8FBC0020 */  lw          $gp, 0x20($sp)

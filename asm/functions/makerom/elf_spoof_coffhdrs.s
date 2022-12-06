@@ -137,10 +137,10 @@ glabel elf_spoof_coffhdrs # 567
 /* 036FB0 00436FB0 51E00008 */  beql        $t7, $zero, .L00436FD4
 /* 036FB4 00436FB4 8FBF003C */   lw         $ra, 0x3C($sp)
 /* 036FB8 00436FB8 8F998524 */  lw          $t9, %call16(foreach_section)($gp)
-/* 036FBC 00436FBC 8F858020 */  lw          $a1, %got(func_00435730)($gp)
+/* 036FBC 00436FBC 8F858020 */  lw          $a1, %got(spoof_section)($gp)
 /* 036FC0 00436FC0 27A6005C */  addiu       $a2, $sp, 0x5C
 /* 036FC4 00436FC4 0320F809 */  jalr        $t9
-/* 036FC8 00436FC8 24A55730 */   addiu      $a1, $a1, %lo(func_00435730)
+/* 036FC8 00436FC8 24A55730 */   addiu      $a1, $a1, %lo(spoof_section)
 /* 036FCC 00436FCC 8FBC0038 */  lw          $gp, 0x38($sp)
 /* 036FD0 00436FD0 8FBF003C */  lw          $ra, 0x3C($sp)
 .L00436FD4:

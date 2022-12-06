@@ -16,10 +16,10 @@ glabel file_to_obj # 258
 /* 02CB18 0042CB18 8C42F244 */   lw         $v0, %lo(B_1000F244)($v0)
 .L0042CB1C:
 /* 02CB1C 0042CB1C 8F99851C */  lw          $t9, %call16(foreach_obj)($gp)
-/* 02CB20 0042CB20 8F858020 */  lw          $a1, %got(func_0042CA94)($gp)
+/* 02CB20 0042CB20 8F858020 */  lw          $a1, %got(check_file_range)($gp)
 /* 02CB24 0042CB24 AFA60024 */  sw          $a2, 0x24($sp)
 /* 02CB28 0042CB28 0320F809 */  jalr        $t9
-/* 02CB2C 0042CB2C 24A5CA94 */   addiu      $a1, $a1, %lo(func_0042CA94)
+/* 02CB2C 0042CB2C 24A5CA94 */   addiu      $a1, $a1, %lo(check_file_range)
 /* 02CB30 0042CB30 2401FFFF */  addiu       $at, $zero, -0x1
 /* 02CB34 0042CB34 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 02CB38 0042CB38 8FA60024 */  lw          $a2, 0x24($sp)

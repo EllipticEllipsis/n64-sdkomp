@@ -4,12 +4,12 @@ glabel search_externals # 625
 # _gp_disp: 0xFBD53AC
 /* 03D9BC 0043D9BC 0399E021 */  addu        $gp, $gp, $t9
 /* 03D9C0 0043D9C0 27BDFFC0 */  addiu       $sp, $sp, -0x40
-/* 03D9C4 0043D9C4 8F998024 */  lw          $t9, %got(func_0043D794)($gp)
+/* 03D9C4 0043D9C4 8F998024 */  lw          $t9, %got(obj_lookup)($gp)
 /* 03D9C8 0043D9C8 AFBF003C */  sw          $ra, 0x3C($sp)
 /* 03D9CC 0043D9CC AFB70034 */  sw          $s7, 0x34($sp)
 /* 03D9D0 0043D9D0 AFB60030 */  sw          $s6, 0x30($sp)
 /* 03D9D4 0043D9D4 AFB5002C */  sw          $s5, 0x2C($sp)
-/* 03D9D8 0043D9D8 2739D794 */  addiu       $t9, $t9, %lo(func_0043D794)
+/* 03D9D8 0043D9D8 2739D794 */  addiu       $t9, $t9, %lo(obj_lookup)
 /* 03D9DC 0043D9DC 0080A825 */  move        $s5, $a0
 /* 03D9E0 0043D9E0 00A0B025 */  move        $s6, $a1
 /* 03D9E4 0043D9E4 00C0B825 */  move        $s7, $a2

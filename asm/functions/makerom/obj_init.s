@@ -612,8 +612,8 @@ glabel obj_init # 248
 /* 02C034 0042C034 8FBC0030 */  lw          $gp, 0x30($sp)
 /* 02C038 0042C038 8E840090 */  lw          $a0, 0x90($s4)
 /* 02C03C 0042C03C 00402825 */  move        $a1, $v0
-/* 02C040 0042C040 8F998020 */  lw          $t9, %got(func_0042D1EC)($gp)
-/* 02C044 0042C044 2739D1EC */  addiu       $t9, $t9, %lo(func_0042D1EC)
+/* 02C040 0042C040 8F998020 */  lw          $t9, %got(get_dynamic_offset)($gp)
+/* 02C044 0042C044 2739D1EC */  addiu       $t9, $t9, %lo(get_dynamic_offset)
 /* 02C048 0042C048 0320F809 */  jalr        $t9
 /* 02C04C 0042C04C 00000000 */   nop
 /* 02C050 0042C050 8FBC0030 */  lw          $gp, 0x30($sp)

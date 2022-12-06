@@ -16,10 +16,10 @@ glabel address_to_obj # 260
 /* 02CC04 0042CC04 8C42F24C */   lw         $v0, %lo(B_1000F24C)($v0)
 .L0042CC08:
 /* 02CC08 0042CC08 8F99851C */  lw          $t9, %call16(foreach_obj)($gp)
-/* 02CC0C 0042CC0C 8F858020 */  lw          $a1, %got(func_0042CB6C)($gp)
+/* 02CC0C 0042CC0C 8F858020 */  lw          $a1, %got(check_address_range)($gp)
 /* 02CC10 0042CC10 AFA60024 */  sw          $a2, 0x24($sp)
 /* 02CC14 0042CC14 0320F809 */  jalr        $t9
-/* 02CC18 0042CC18 24A5CB6C */   addiu      $a1, $a1, %lo(func_0042CB6C)
+/* 02CC18 0042CC18 24A5CB6C */   addiu      $a1, $a1, %lo(check_address_range)
 /* 02CC1C 0042CC1C 2401FFFF */  addiu       $at, $zero, -0x1
 /* 02CC20 0042CC20 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 02CC24 0042CC24 8FA60024 */  lw          $a2, 0x24($sp)

@@ -19,9 +19,9 @@ glabel ldclose # 209
 /* 029E78 00429E78 3401FF65 */  ori         $at, $zero, 0xFF65
 /* 029E7C 00429E7C 15C1000A */  bne         $t6, $at, .L00429EA8
 /* 029E80 00429E80 00000000 */   nop
-/* 029E84 00429E84 8F998020 */  lw          $t9, %got(func_004295E4)($gp)
+/* 029E84 00429E84 8F998020 */  lw          $t9, %got(nextfile)($gp)
 /* 029E88 00429E88 02002025 */  move        $a0, $s0
-/* 029E8C 00429E8C 273995E4 */  addiu       $t9, $t9, %lo(func_004295E4)
+/* 029E8C 00429E8C 273995E4 */  addiu       $t9, $t9, %lo(nextfile)
 /* 029E90 00429E90 0320F809 */  jalr        $t9
 /* 029E94 00429E94 00000000 */   nop
 /* 029E98 00429E98 10400003 */  beqz        $v0, .L00429EA8

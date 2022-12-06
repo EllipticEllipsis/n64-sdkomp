@@ -191,27 +191,27 @@ glabel next_tq # 634
 /* 03E65C 0043E65C 25F8FFF6 */  addiu       $t8, $t7, -0xA
 /* 03E660 0043E660 AE180028 */  sw          $t8, 0x28($s0)
 .L0043E664:
-/* 03E664 0043E664 8F998024 */  lw          $t9, %got(func_0043DDCC)($gp)
+/* 03E664 0043E664 8F998024 */  lw          $t9, %got(get_rndx)($gp)
 /* 03E668 0043E668 00E02025 */  move        $a0, $a3
 /* 03E66C 0043E66C 02002825 */  move        $a1, $s0
-/* 03E670 0043E670 2739DDCC */  addiu       $t9, $t9, %lo(func_0043DDCC)
+/* 03E670 0043E670 2739DDCC */  addiu       $t9, $t9, %lo(get_rndx)
 /* 03E674 0043E674 0320F809 */  jalr        $t9
 /* 03E678 0043E678 AFA70044 */   sw         $a3, 0x44($sp)
 /* 03E67C 0043E67C 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 03E680 0043E680 8FA40044 */  lw          $a0, 0x44($sp)
 /* 03E684 0043E684 02002825 */  move        $a1, $s0
-/* 03E688 0043E688 8F998024 */  lw          $t9, %got(func_0043DBB0)($gp)
+/* 03E688 0043E688 8F998024 */  lw          $t9, %got(set_paux)($gp)
 /* 03E68C 0043E68C 8E060028 */  lw          $a2, 0x28($s0)
-/* 03E690 0043E690 2739DBB0 */  addiu       $t9, $t9, %lo(func_0043DBB0)
+/* 03E690 0043E690 2739DBB0 */  addiu       $t9, $t9, %lo(set_paux)
 /* 03E694 0043E694 0320F809 */  jalr        $t9
 /* 03E698 0043E698 00000000 */   nop
 /* 03E69C 0043E69C 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 03E6A0 0043E6A0 8C460000 */  lw          $a2, 0x0($v0)
 /* 03E6A4 0043E6A4 24430004 */  addiu       $v1, $v0, 0x4
-/* 03E6A8 0043E6A8 8F998024 */  lw          $t9, %got(func_0043DD14)($gp)
+/* 03E6A8 0043E6A8 8F998024 */  lw          $t9, %got(AUX)($gp)
 /* 03E6AC 0043E6AC AFA30040 */  sw          $v1, 0x40($sp)
 /* 03E6B0 0043E6B0 27A40028 */  addiu       $a0, $sp, 0x28
-/* 03E6B4 0043E6B4 2739DD14 */  addiu       $t9, $t9, %lo(func_0043DD14)
+/* 03E6B4 0043E6B4 2739DD14 */  addiu       $t9, $t9, %lo(AUX)
 /* 03E6B8 0043E6B8 8FA50044 */  lw          $a1, 0x44($sp)
 /* 03E6BC 0043E6BC 24070004 */  addiu       $a3, $zero, 0x4
 /* 03E6C0 0043E6C0 0320F809 */  jalr        $t9
@@ -219,11 +219,11 @@ glabel next_tq # 634
 /* 03E6C8 0043E6C8 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 03E6CC 0043E6CC 8FA30040 */  lw          $v1, 0x40($sp)
 /* 03E6D0 0043E6D0 8FA90028 */  lw          $t1, 0x28($sp)
-/* 03E6D4 0043E6D4 8F998024 */  lw          $t9, %got(func_0043DD14)($gp)
+/* 03E6D4 0043E6D4 8F998024 */  lw          $t9, %got(AUX)($gp)
 /* 03E6D8 0043E6D8 24630004 */  addiu       $v1, $v1, 0x4
 /* 03E6DC 0043E6DC AE090034 */  sw          $t1, 0x34($s0)
 /* 03E6E0 0043E6E0 8C66FFFC */  lw          $a2, -0x4($v1)
-/* 03E6E4 0043E6E4 2739DD14 */  addiu       $t9, $t9, %lo(func_0043DD14)
+/* 03E6E4 0043E6E4 2739DD14 */  addiu       $t9, $t9, %lo(AUX)
 /* 03E6E8 0043E6E8 AFA30040 */  sw          $v1, 0x40($sp)
 /* 03E6EC 0043E6EC 8FA50044 */  lw          $a1, 0x44($sp)
 /* 03E6F0 0043E6F0 27A40028 */  addiu       $a0, $sp, 0x28
@@ -233,10 +233,10 @@ glabel next_tq # 634
 /* 03E700 0043E700 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 03E704 0043E704 8FAC0028 */  lw          $t4, 0x28($sp)
 /* 03E708 0043E708 8FA30040 */  lw          $v1, 0x40($sp)
-/* 03E70C 0043E70C 8F998024 */  lw          $t9, %got(func_0043DD14)($gp)
+/* 03E70C 0043E70C 8F998024 */  lw          $t9, %got(AUX)($gp)
 /* 03E710 0043E710 AE0C0038 */  sw          $t4, 0x38($s0)
 /* 03E714 0043E714 8C660000 */  lw          $a2, 0x0($v1)
-/* 03E718 0043E718 2739DD14 */  addiu       $t9, $t9, %lo(func_0043DD14)
+/* 03E718 0043E718 2739DD14 */  addiu       $t9, $t9, %lo(AUX)
 /* 03E71C 0043E71C 8FA50044 */  lw          $a1, 0x44($sp)
 /* 03E720 0043E720 27A40028 */  addiu       $a0, $sp, 0x28
 /* 03E724 0043E724 24070004 */  addiu       $a3, $zero, 0x4
@@ -266,19 +266,19 @@ glabel next_tq # 634
 /* 03E780 0043E780 00184040 */  sll         $t0, $t8, 1
 /* 03E784 0043E784 0503001F */  bgezl       $t0, .L0043E804
 /* 03E788 0043E788 9219000C */   lbu        $t9, 0xC($s0)
-/* 03E78C 0043E78C 8F998024 */  lw          $t9, %got(func_0043DBB0)($gp)
+/* 03E78C 0043E78C 8F998024 */  lw          $t9, %got(set_paux)($gp)
 /* 03E790 0043E790 8E060028 */  lw          $a2, 0x28($s0)
 /* 03E794 0043E794 AFA70044 */  sw          $a3, 0x44($sp)
-/* 03E798 0043E798 2739DBB0 */  addiu       $t9, $t9, %lo(func_0043DBB0)
+/* 03E798 0043E798 2739DBB0 */  addiu       $t9, $t9, %lo(set_paux)
 /* 03E79C 0043E79C 0320F809 */  jalr        $t9
 /* 03E7A0 0043E7A0 02002825 */   move       $a1, $s0
 /* 03E7A4 0043E7A4 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 03E7A8 0043E7A8 8C460000 */  lw          $a2, 0x0($v0)
 /* 03E7AC 0043E7AC 27A40028 */  addiu       $a0, $sp, 0x28
-/* 03E7B0 0043E7B0 8F998024 */  lw          $t9, %got(func_0043DD14)($gp)
+/* 03E7B0 0043E7B0 8F998024 */  lw          $t9, %got(AUX)($gp)
 /* 03E7B4 0043E7B4 8FA50044 */  lw          $a1, 0x44($sp)
 /* 03E7B8 0043E7B8 00003825 */  move        $a3, $zero
-/* 03E7BC 0043E7BC 2739DD14 */  addiu       $t9, $t9, %lo(func_0043DD14)
+/* 03E7BC 0043E7BC 2739DD14 */  addiu       $t9, $t9, %lo(AUX)
 /* 03E7C0 0043E7C0 0320F809 */  jalr        $t9
 /* 03E7C4 0043E7C4 AFA60008 */   sw         $a2, 0x8($sp)
 /* 03E7C8 0043E7C8 8FBC0018 */  lw          $gp, 0x18($sp)
@@ -302,10 +302,10 @@ glabel next_tq # 634
 /* 03E80C 0043E80C 3328003F */  andi        $t0, $t9, 0x3F
 /* 03E810 0043E810 1501000A */  bne         $t0, $at, .L0043E83C
 /* 03E814 0043E814 AE180028 */   sw         $t8, 0x28($s0)
-/* 03E818 0043E818 8F998024 */  lw          $t9, %got(func_0043E1C8)($gp)
+/* 03E818 0043E818 8F998024 */  lw          $t9, %got(set_bt)($gp)
 /* 03E81C 0043E81C 8E020018 */  lw          $v0, 0x18($s0)
 /* 03E820 0043E820 00E02025 */  move        $a0, $a3
-/* 03E824 0043E824 2739E1C8 */  addiu       $t9, $t9, %lo(func_0043E1C8)
+/* 03E824 0043E824 2739E1C8 */  addiu       $t9, $t9, %lo(set_bt)
 /* 03E828 0043E828 02002825 */  move        $a1, $s0
 /* 03E82C 0043E82C AE020028 */  sw          $v0, 0x28($s0)
 /* 03E830 0043E830 0320F809 */  jalr        $t9

@@ -1,0 +1,719 @@
+# Some static functions have the same name, ignore them
+0x409820,main
+0x40A700,usage
+0x40A810,getOsVersion
+0x40A9AC,checkIdoVersion
+0x40ABA0,printVersion
+0x40AC0C,getBootFile
+0x40AE34,getPif2BootFile
+0x40B05C,getRomheaderFile
+0x40B4E8,getFontDataFile
+0x40B780,gloadFindFile
+0x40B93C,doWave
+0x40BA54,nameTempFiles
+0x40BC54,unlinkTempFiles
+0x40BD2C,cleanup
+0x40BD88,execCommand
+0x40BF10,createElspec
+0x40C644,runLinker
+0x40C940,scanSegments
+0x40CB84,sizeObject
+0x40DA80,sizeRaw
+0x40DDF8,checkSizes
+0x40E000,checkOverlaps
+0x40E1D8,createSegmentSymbols
+0x40E748,createRomImage
+0x40F22C,openAouts
+0x40F3F4,lookupSymbol
+0x40F5D8,lookupShdr
+0x40F8B4,readObject
+0x40FF3C,readRaw
+0x410170,createEntryFile
+0x410850,ALIGNn
+0x4108B0,readCoff
+0x41093C,Extract
+0x410C90,yylex
+0x4111DC,skipComments
+0x41162C,skipPound
+0x4119A0,yylook
+0x412560,yyback
+0x4125D0,yyinput
+0x412748,yyoutput
+0x412814,yyunput
+0x4128B0,yyerror
+0x412914,printError
+0x4129BC,expandPath
+0x412B14,yyparse
+0x4144D0,_elf64_entsz
+0x414548,_elf64_fsize
+0x4145C8,_elf64_msize
+0x4145FC,_elf64_mtype
+0x414648,_elf_version
+# 0x41479C,xlate
+0x414AF0,_elf64_xlatetof
+0x414B44,_elf64_xlatetom
+# 0x414B98,addr_2L_tof
+# 0x414D40,addr_2M_tof
+# 0x414EE8,byte_to
+# 0x414F40,dyn_2L11_tof
+# 0x41512C,dyn_2M11_tof
+# 0x415318,ehdr_2L11_tof
+# 0x4158F4,ehdr_2M11_tof
+# 0x415ED0,half_2L_tof
+# 0x415F10,half_2M_tof
+# 0x415F50,off_2L_tof
+# 0x4160F8,off_2M_tof
+# 0x4162A0,phdr_2L11_tof
+# 0x416AF0,phdr_2M11_tof
+# 0x417340,rel_2L11_tof
+# 0x417564,rel_2M11_tof
+# 0x417788,rela_2L11_tof
+# 0x417AF0,rela_2M11_tof
+# 0x417E58,shdr_2L11_tof
+# 0x418718,shdr_2M11_tof
+# 0x418FD8,sword_2L_tof
+# 0x419028,sword_2M_tof
+# 0x419078,sxword_2L_tof
+# 0x419220,sxword_2M_tof
+# 0x4193C8,sym_2L11_tof
+# 0x419730,sym_2M11_tof
+# 0x419A98,word_2L_tof
+# 0x419AE8,word_2M_tof
+# 0x419B38,xword_2L_tof
+# 0x419CE0,xword_2M_tof
+# 0x419E88,addr_2L_tom
+# 0x41A110,addr_2M_tom
+# 0x41A398,dyn_2L11_tom
+# 0x41A81C,dyn_2M11_tom
+# 0x41ACA0,ehdr_2L11_tom
+# 0x41B490,ehdr_2M11_tom
+# 0x41BC80,half_2L_tom
+# 0x41BCDC,half_2M_tom
+# 0x41BD38,off_2L_tom
+# 0x41BFC0,off_2M_tom
+# 0x41C248,phdr_2L11_tom
+# 0x41CF20,phdr_2M11_tom
+# 0x41DBF8,rel_2L11_tom
+# 0x41DEFC,rel_2M11_tom
+# 0x41E200,rela_2L11_tom
+# 0x41E700,rela_2M11_tom
+# 0x41EC00,shdr_2L11_tom
+# 0x41F940,shdr_2M11_tom
+# 0x420680,sword_2L_tom
+# 0x4206F4,sword_2M_tom
+# 0x420768,sxword_2L_tom
+# 0x4209F0,sxword_2M_tom
+# 0x420C78,sym_2L11_tom
+# 0x421174,sym_2M11_tom
+# 0x421670,word_2L_tom
+# 0x4216E4,word_2M_tom
+# 0x421758,xword_2L_tom
+# 0x4219E0,xword_2M_tom
+0x421C70,_elf_getdata
+0x4220D0,_elf_strptr
+0x4223C0,disallow_mmap_read
+0x4224D4,_elf_begin
+0x42298C,member
+0x422C3C,regular
+0x422DD0,_elf_end
+0x423170,_elf32_entsz
+0x4231E8,_elf32_fsize
+0x423268,_elf32_msize
+0x42329C,_elf32_mtype
+# 0x4232E8,xlate
+0x42363C,_elf32_xlatetof
+0x423690,_elf32_xlatetom
+# 0x4236E4,addr_2L_tof
+# 0x423734,addr_2M_tof
+# 0x423784,byte_to
+# 0x4237DC,dyn_2L11_tof
+# 0x423858,dyn_2M11_tof
+# 0x4238D4,ehdr_2L11_tof
+# 0x423BC0,ehdr_2M11_tof
+# 0x423EAC,half_2L_tof
+# 0x423EEC,half_2M_tof
+# 0x423F2C,off_2L_tof
+# 0x423F7C,off_2M_tof
+# 0x423FCC,phdr_2L11_tof
+# 0x42411C,phdr_2M11_tof
+# 0x42426C,rel_2L11_tof
+# 0x4242E8,rel_2M11_tof
+# 0x424364,rela_2L11_tof
+# 0x424408,rela_2M11_tof
+# 0x4244AC,shdr_2L11_tof
+# 0x42466C,shdr_2M11_tof
+# 0x42482C,sword_2L_tof
+# 0x42487C,sword_2M_tof
+# 0x4248CC,sym_2L11_tof
+# 0x424988,sym_2M11_tof
+# 0x424A44,word_2L_tof
+# 0x424A94,word_2M_tof
+# 0x424AE4,addr_2L_tom
+# 0x424B58,addr_2M_tom
+# 0x424BCC,dyn_2L11_tom
+# 0x424C74,dyn_2M11_tom
+# 0x424D1C,ehdr_2L11_tom
+# 0x424FCC,ehdr_2M11_tom
+# 0x42527C,half_2L_tom
+# 0x4252D8,half_2M_tom
+# 0x425334,off_2L_tom
+# 0x4253A8,off_2M_tom
+# 0x42541C,phdr_2L11_tom
+# 0x4255CC,phdr_2M11_tom
+# 0x42577C,rel_2L11_tom
+# 0x425824,rel_2M11_tom
+# 0x4258CC,rela_2L11_tom
+# 0x4259B0,rela_2M11_tom
+# 0x425A94,shdr_2L11_tom
+# 0x425CAC,shdr_2M11_tom
+# 0x425EC4,sword_2L_tom
+# 0x425F38,sword_2M_tom
+# 0x425FAC,sym_2L11_tom
+# 0x4260A4,sym_2M11_tom
+# 0x42619C,word_2L_tom
+# 0x426210,word_2M_tom
+0x426290,_elf32_getehdr
+0x426338,_elf64_getehdr
+0x4263E0,_elf_cook
+0x426650,_elf_cookscn
+0x426A34,_elf_dnode
+0x426AD4,_elf_snode
+0x426B74,ehdr32
+0x426D48,ehdr64
+0x426F1C,phdr32
+0x427194,phdr64
+0x427498,shdr32
+0x427710,shdr64
+0x427A00,slide
+0x427BD0,_elf32_getshdr
+0x427C4C,_elf64_getshdr
+0x427CD0,_elf_kind
+0x427D00,_elf_vm
+0x4281BC,_elf_inmap
+0x4284B0,_elf_unmap
+0x428510,_elf_getscn
+0x428600,ck_mangle
+0x4286E0,do_mangle
+0x428784,number
+0x4288DC,_elf_armem
+0x428DA4,_elf_arinit
+0x429120,yywrap
+0x429130,gethostsex
+0x429160,ar_strtab_insert_nulls
+0x4291D4,elf_get_ar_filename
+0x4292B4,allocldptr
+0x429314,ldopen
+0x4295AC,__sgi_init_ldfile
+0x4295E4,nextfile
+0x4298BC,init_ldfile
+0x429E3C,ldclose
+0x429F04,nyi
+0x429F6C,nop
+0x429FB4,ldinitheaders
+0x429FF0,ldfhread
+0x42A028,ldshread
+0x42A07C,vldldptr
+0x42A0A0,freeldptr
+0x42A158,__sgi_dbx_freeldptr
+0x42A200,__sgi_ldftell
+0x42A240,__sgi_ldmemseek
+0x42A310,ldfseek
+0x42A3C4,ldfread
+0x42A43C,ldlseek
+0x42A4A4,ldnlseek
+0x42A4E0,ldnrseek
+0x42A5C4,ldnsseek
+0x42A6C8,ldohseek
+0x42A77C,ldrseek
+0x42A7EC,ldsseek
+0x42A868,ldtbseek
+0x42A8E0,ldnreloc
+0x42AA80,hdrassign
+0x42AA88,ldaopen
+0x42ABAC,ldaclose
+0x42AC1C,ldahread
+0x42AC64,ldohread
+0x42ACC4,ldarsymread
+0x42AF04,ldnshread
+0x42B014,_ld_get_procedure_table
+0x42B084,int _ld_init_rt_proc_table
+0x42B0E0,save_str
+0x42B148,dbx_cmp_proctbl
+0x42B170,dbx_build_proctbl
+0x42B178,change_fortran_names
+0x42B3E0,__sgi_dbx_obj_close
+0x42B4C4,__sgi_fobj_open
+0x42B5E8,obj_open
+0x42B750,dbx_obj_open
+0x42B86C,obj_init
+0x42C4C8,check_obj_name
+0x42C4D0,add_obj
+0x42C630,dbx_add_obj
+0x42C7A4,dbx_insert_obj
+0x42C8E0,check_symbol_range
+0x42C934,symbol_to_obj
+0x42C9BC,check_procedure_range
+0x42CA0C,procedure_to_obj
+0x42CA94,check_file_range
+0x42CAE4,file_to_obj
+0x42CB6C,check_address_range
+0x42CBD0,address_to_obj
+0x42CC58,obj_read_from_fd
+0x42CF08,obj_close
+0x42D094,dbx_obj_close
+0x42D1B0,obj_nsections
+0x42D1EC,get_dynamic_offset
+0x42D2A4,obj_dynamic
+0x42D3EC,obj_get_dynamic_info
+0x42DD08,elfhash
+0x42DD54,obj_shared
+0x42DE00,obj_call_shared
+0x42DEAC,obj_newstr
+0x42DF34,split
+0x42E014,match_string_ignore_comment_and_whitespace
+0x42E31C,match_string_ignore_minor
+0x42E674,match_string
+0x42E7D0,get_dynsym_hash_value
+0x42E86C,obj_get_magic
+0x42E908,obj_text_offset
+0x42EA40,dumpobj_struct
+0x42EA48,elf_get_pt_interp
+0x42EB5C,search_symbol_using_hash
+0x42ED24,obj_find_symbol_value
+0x42EE38,obj_find_procedure_table
+0x42EF60,_create_rt_proc_table
+0x42F310,obj_otype
+0x42F318,obj_pfilehdr
+0x42F320,obj_paouthdr
+0x42F328,obj_pscnhdr
+0x42F330,obj_phdrr
+0x42F338,obj_psymr
+0x42F340,obj_pextr
+0x42F348,obj_symbol_base
+0x42F350,obj_file_base
+0x42F358,obj_procedure_base
+0x42F360,obj_type_base
+0x42F368,obj_base_address
+0x42F370,obj_set_base_address
+0x42F378,obj_map_address
+0x42F380,obj_set_map_address
+0x42F388,obj_map_diff
+0x42F3DC,obj_map_diff_dbx
+0x42F454,obj_hash
+0x42F45C,obj_set_hash_address
+0x42F464,obj_dynstr
+0x42F46C,obj_set_dynstr_address
+0x42F474,obj_dynsym
+0x42F47C,obj_set_dynsym_address
+0x42F484,obj_msym
+0x42F48C,obj_set_msym_address
+0x42F494,obj_got
+0x42F49C,obj_set_got_address
+0x42F4A4,obj_dynrel
+0x42F4AC,obj_set_dynrel_address
+0x42F4B4,obj_liblist
+0x42F4BC,obj_create_liblist_entry
+0x42F540,obj_set_liblist_address
+0x42F548,obj_conflict
+0x42F550,obj_set_conflict_address
+0x42F558,obj_locgotcount
+0x42F560,obj_set_locgotcount
+0x42F568,obj_unrefextno
+0x42F570,obj_set_unrefextno
+0x42F578,obj_gotsym
+0x42F580,obj_set_gotsym
+0x42F588,obj_timestamp
+0x42F590,obj_set_timestamp
+0x42F598,obj_ichecksum
+0x42F5A0,obj_set_ichecksum
+0x42F5A8,obj_iversion
+0x42F5B0,obj_set_iversion
+0x42F5B8,obj_dynflags
+0x42F5C0,obj_set_dynflags
+0x42F5C8,obj_dynrelsz
+0x42F5D0,obj_set_dynrelsz
+0x42F5D8,obj_dynrelent
+0x42F5E0,obj_set_dynrelent
+0x42F5E8,obj_dynsymcount
+0x42F5F0,obj_set_dynsymcount
+0x42F5F8,obj_dynsyment
+0x42F600,obj_set_dynsyment
+0x42F608,obj_dynstrsz
+0x42F610,obj_set_dynstrsz
+0x42F618,obj_liblistcount
+0x42F620,obj_set_liblistcount
+0x42F628,obj_conflictcount
+0x42F630,obj_set_conflictcount
+0x42F638,obj_extgot
+0x42F640,obj_set_extgot
+0x42F648,obj_rpath
+0x42F650,obj_set_rpath
+0x42F658,obj_soname
+0x42F660,obj_set_soname
+0x42F668,obj_rldversion
+0x42F670,obj_rldversion_string
+0x42F69C,obj_set_rldversion
+0x42F6A4,obj_text_start
+0x42F6AC,obj_set_text_start
+0x42F6B4,obj_text_size
+0x42F6BC,obj_set_text_size
+0x42F6C4,obj_data_start
+0x42F6CC,obj_set_data_start
+0x42F6D4,obj_bss_start
+0x42F6DC,obj_set_bss_start
+0x42F6E4,obj_data_size
+0x42F738,obj_bss_size
+0x42F740,obj_set_bss_size
+0x42F748,obj_name
+0x42F750,obj_set_name
+0x42F758,obj_path
+0x42F760,obj_set_path
+0x42F768,obj_init_address
+0x42F770,obj_set_init_address
+0x42F778,obj_pixie_init_address
+0x42F780,obj_set_pixie_init_address
+0x42F788,obj_fini_address
+0x42F790,obj_set_fini_address
+0x42F798,obj_entry_address
+0x42F7A0,obj_set_entry_address
+0x42F7A8,obj_rldflags
+0x42F7B0,obj_set_rldflag
+0x42F7C0,obj_unset_rldflag
+0x42F7D4,obj_is_mapped
+0x42F7E0,obj_was_modified
+0x42F7EC,obj_chksum_changed
+0x42F7F8,obj_was_moved
+0x42F804,obj_followed_csc
+0x42F810,obj_is_symbolic
+0x42F81C,obj_committed
+0x42F828,obj_set_cxx_flags
+0x42F838,obj_unset_cxx_flags
+0x42F84C,obj_cxx_flags
+0x42F854,obj_is_delta_object
+0x42F860,obj_delta_fixup
+0x42F86C,obj_delta_read_defns
+0x42F878,obj_get_delta_version
+0x42F88C,obj_start_init
+0x42F898,obj_init_done
+0x42F8A4,obj_pixie_init_done
+0x42F8B4,obj_set_pixie_init_done
+0x42F8C8,obj_set_start_init
+0x42F8D8,obj_set_init_done
+0x42F8E8,obj_dynstrtab
+0x42F8F0,obj_dynstring
+0x42F92C,obj_set_dynstrtab
+0x42F934,obj_conflict_foreign
+0x42F96C,obj_liblist_foreign
+0x42F9A4,obj_dynsym_value
+0x42F9B8,obj_set_dynsym_value
+0x42F9CC,obj_sym_other
+0x42F9E0,obj_dynsym_size
+0x42F9F4,obj_set_dynsym_size
+0x42FA08,obj_sym_shndx
+0x42FA1C,obj_dynsym_name
+0x42FA60,obj_sym_info
+0x42FA74,obj_msym_exists
+0x42FA80,obj_msym_not_exists
+0x42FA8C,obj_dynsym_hash_value
+0x42FB04,obj_nbucket
+0x42FB10,obj_nchain
+0x42FB1C,obj_hash_bucket
+0x42FB30,obj_hash_chain
+0x42FB88,obj_dynsym_got
+0x42FC24,obj_set_dynsym_got
+0x42FCB0,obj_locgot
+0x42FCC4,obj_set_local_got
+0x42FCD8,obj_dynsym_rel_index
+0x42FCF0,obj_msym_ms_info
+0x42FD04,obj_set_msym_ms_info
+0x42FD18,obj_msym_ms_hash_value
+0x42FD2C,obj_set_msym_ms_hash_value
+0x42FD40,obj_rel_off
+0x42FD54,obj_rel_info
+0x42FD68,obj_conflict_symbol
+0x42FD7C,obj_liblist_name
+0x42FDE0,obj_liblist_tstamp
+0x42FDFC,obj_liblist_csum
+0x42FE18,obj_liblist_version_str
+0x42FE3C,obj_liblist_version
+0x42FE58,obj_liblist_flags
+0x42FE74,obj_interface_version
+0x42FE84,obj_interface_not_match
+0x42FEF4,obj_checksum_not_match
+0x42FF40,obj_name_not_match
+0x42FF9C,obj_tstamp_not_match
+0x42FFE8,obj_different_name
+0x430024,obj_pelfhdr
+0x43002C,obj_pproghdr
+0x430034,obj_psecthdr
+0x43003C,obj_section
+0x4300CC,obj_shstrndx
+0x430100,obj_section_index_name
+0x4301B4,obj_section_bits
+0x4301C4,obj_section_index_bits
+0x430214,obj_section_vaddr
+0x43024C,obj_section_size
+0x430284,obj_section_offset
+0x4302BC,obj_section_name
+0x430360,obj_rld_map
+0x430368,obj_set_rld_map
+0x430370,obj_fd
+0x430378,obj_set_fd
+0x430380,hdr_symptr
+0x43038C,procedure_lnlow
+0x4303D0,procedure_lnhigh
+0x4303FC,obj_arch
+0x430404,obj_delta_class
+0x43040C,obj_set_delta_class
+0x430414,obj_delta_class_no
+0x43041C,obj_set_delta_class_no
+0x430424,obj_delta_instance
+0x43042C,obj_set_delta_instance
+0x430434,obj_delta_instance_no
+0x43043C,obj_set_delta_instance_no
+0x430444,obj_delta_reloc
+0x43044C,obj_set_delta_reloc
+0x430454,obj_delta_reloc_no
+0x43045C,obj_set_delta_reloc_no
+0x430464,obj_delta_rel_off
+0x430478,obj_delta_rel_info
+0x43048C,obj_delta_sym
+0x430494,obj_set_delta_sym
+0x43049C,obj_delta_sym_no
+0x4304A4,obj_set_delta_sym_no
+0x4304AC,obj_delta_classsym
+0x4304B4,obj_set_delta_classsym
+0x4304BC,obj_delta_classsym_no
+0x4304C4,obj_set_delta_classsym_no
+0x4304CC,obj_set_symlib
+0x4304D4,obj_symlib_num
+0x430518,obj_rld_text_resolve_addr
+0x430520,obj_set_rld_text_resolve_addr
+0x430530,warning
+0x4305B0,swap_filehdr
+0x430694,swap_aouthdr
+0x43090C,swap_scnhdr
+0x430A74,swap_libscn
+0x430BE0,swap_hdr
+0x431010,swap_fd
+0x4315F8,swap_fi
+0x43172C,swap_sym
+0x4319B0,swap_ext
+0x431D98,swap_pd
+0x432014,swap_dn
+0x432160,swap_rpd
+0x432320,swap_opt
+0x4325A0,swap_aux
+0x4327FC,swap_reloc
+0x432A14,swap_ranlib
+0x432A90,swap_gpt
+0x432B10,swap_dynamic
+0x432BA0,swap_rel_dyn
+0x432C04,swap_reginfo
+0x432D1C,swap_dynsym
+0x432DC0,swap_conflict
+0x432DF8,swap_got
+0x432E30,swap_liblist
+0x432F18,swap_msym
+0x432F7C,swap_ehdr
+0x433104,swap_phdr
+0x43326C,swap_shdr
+0x433430,procedure_symbol
+0x433578,procedure_ppd
+0x433604,procedure_address
+0x433730,procedure_iline
+0x433804,procedure_lnLow
+0x4338D8,procedure_lnHigh
+0x4339AC,procedure_cbLineOffset
+0x433A80,address_to_procedure
+0x433D48,foreach_obj_procedure
+0x433E10,foreach_procedure
+0x433F08,newprocedure
+0x433FA0,symbol_to_file
+0x4340D4,type_to_file
+0x4341D0,procedure_to_file
+0x4342CC,file_pfd
+0x4342EC,file_symbol
+0x434340,file_lineindex
+0x43438C,file_cline
+0x4343C0,file_cbLineOffset
+0x4343F4,file_lang
+0x43442C,file_glevel
+0x434464,file_symbol_count
+0x434498,file_type_base
+0x4344D4,file_string_base
+0x434510,foreach_rfd
+0x4346BC,st_file_name
+0x434778,address_to_file
+0x4347E0,objList_add
+0x4348BC,objList_change
+0x434AF8,foreach_obj
+0x434B84,forall_previous_objs
+0x434C94,list_last
+0x434CB8,foreach_sublist
+0x434D50,foreach_section
+0x434E88,match_addr
+0x434F94,address_to_section
+0x434FEC,section_type
+0x43526C,section_raw
+0x435294,section_nrel
+0x435358,section_rel
+0x43537C,find_section_byname
+0x4354F8,find_section_bytype
+0x4355A0,check_obj_sections
+0x435614,obj_section_type
+0x435670,st_error
+0x435730,spoof_section
+0x436DC8,elf_spoof_coffhdrs
+0x436FFC,elf_nreloc
+0x437178,obj_raw_bits
+0x43721C,obj_section_reloc_type
+0x4375B0,get_section_num
+0x437610,ldroundup
+0x437654,obj_update_dynamic
+0x43795C,write_section
+0x437C8C,obj_vtofo
+0x437E8C,obj_vtop
+0x438224,obj_rewrite
+0x438F20,update_addresses
+0x4390A4,compare_coff_sections
+0x4390E8,compare_elf_sections
+0x4390F0,obj_write
+0x439F1C,obj_extend_text_segment
+0x43A24C,obj_extend_bss_segment
+0x43A418,obj_set_section_size
+0x43A4E8,obj_map_dynamic
+0x43A938,obj_gpvalue
+0x43AA64,obj_add_global_abs_symbol
+0x43AC38,obj_end
+0x43AE20,error
+0x43AEC0,symbol_class
+0x43AF6C,symbol_type
+0x43B00C,symbol_value
+0x43B23C,symbol_iaux
+0x43B380,file_symbol_iaux
+0x43B490,symbol_isym
+0x43B5D4,file_symbol_isym
+0x43B6E4,symbol_value_isym
+0x43B7A4,symbol_value_iaux
+0x43B864,end_symbol
+0x43B918,file_end_symbol
+0x43B9D8,procedure_end_symbol
+0x43BA44,file_procedure_end_symbol
+0x43BAB8,real_address_to_symbol
+0x43BC7C,address_to_symbol
+0x43BCBC,symbol_to_outer_scope_symbol
+0x43BEB0,symbol_name
+0x43C02C,user_symbol_alloc
+0x43C07C,user_symbol_free
+0x43C0A4,user_type_alloc
+0x43C0EC,newsymbol
+0x43C384,modify_user_symbol
+0x43C5A4,find_user_symbol
+0x43C670,file_symbol_name
+0x43C7D8,symbol_check_enum
+0x43C8AC,scope_name_search
+0x43CCB0,scope_name_to_sym
+0x43D070,file_scope_name_search
+0x43D0F4,search_cobol_main
+0x43D160,search_procedures
+0x43D2EC,search_files
+0x43D46C,st_find_symbol
+0x43D5E0,case_strcmp
+0x43D6BC,case_streq
+0x43D794,obj_lookup
+0x43D9B4,search_externals
+0x43DBB0,set_paux
+0x43DBF8,aux_isym
+0x43DC94,file_aux_isym
+0x43DD14,AUX
+0x43DDCC,get_rndx
+0x43DFA8,get_aux
+0x43DFE8,get_range
+0x43E1C8,set_bt
+0x43E3F8,next_tq
+0x43E850,type_deref
+0x43E900,panic
+0x43E990,st_setchdr
+0x43E9A8,st_currentpchdr
+0x43E9C0,st_free
+0x43ECA4,st_extstradd
+0x43EDC0,st_str_extiss
+0x43EE00,st_idn_dn
+0x43EF18,st_idn_rndx
+0x43F03C,st_rndx_idn
+0x43F14C,st_setidn
+0x43F1F4,st_pext_dn
+0x43F29C,st_iextmax
+0x43F2B8,st_setmsgname
+0x43F360,st_currentifd
+0x43F3B0,st_ifdmax
+0x43F3CC,st_setfd
+0x43F43C,st_fdadd
+0x43FADC,st_auxadd
+0x43FC08,st_pdadd
+0x43FD94,st_lineadd
+0x43FEBC,st_stradd
+0x440030,st_non_gp
+0x44005C,st_set_non_gp
+0x440070,st_paux_ifd_iaux
+0x440160,st_pline_ifd_iline
+0x440250,st_str_iss
+0x440300,st_malloc
+0x440450,st_symadd
+0x4406E8,st_ifd_pcfd
+0x440774,st_pcfd_ifd
+0x44081C,st_psym_ifd_isym
+0x440944,st_paux_iaux
+0x440A10,st_str_ifd_iss
+0x440AE0,st_ppd_ifd_isym
+0x440BB0,_md_st_internal
+0x440C6C,_md_st_error
+0x440D28,_md_st_str_extiss
+0x440D68,_md_st_str_iss
+0x440E18,_md_st_iextmax
+0x440E34,_md_st_currentifd
+0x440E84,_md_st_malloc
+0x440FD0,_md_st_ifdmax
+0x440FEC,_md_st_setfd
+0x441060,st_cuinit
+0x4410D4,st_extadd
+0x4412BC,st_pext_iext
+0x441330,st_idn_index_fext
+0x44146C,st_pdn_idn
+0x4414F0,fatal
+0x441580,st_internal
+0x441640,__sgi_mld_st_commonbegin
+0x441684,st_filebegin
+0x441920,st_endallfiles
+0x441AF0,st_fileend
+0x441C90,st_textblock
+0x441D90,_sgi_st_blockbegin
+0x441EE8,st_blockbegin
+0x44203C,st_blockend
+0x4421F4,st_blockpop
+0x442218,st_procend
+0x44247C,st_procbegin
+0x44268C,st_sym_idn
+0x442774,st_str_idn
+0x442808,st_fglobal_idn
+0x4428B0,st_psym_idn_offset
+0x442AE0,st_fixextindex
+0x442B94,st_fixextsc
+0x442C10,st_pdadd_idn
+0x442C94,st_fixiss
+0x442D20,st_changedn
+0x442D6C,st_file_idn
+0x442EF0,st_tqhigh_iaux
+0x442FCC,st_shifttq
+0x443088,st_iaux_copyty
+0x4433C4,st_changeaux
+0x443408,st_addtq
+0x443518,st_changeauxrndx
+0x443614,st_auxbtadd
+0x443684,st_auxisymadd
+0x4436C0,st_auxrndxadd
+0x443754,st_auxbtsize
+0x4437AC,st_auxrndxadd_idn
+0x4437F8,st_addcontinued
+0x443840,st_feinit

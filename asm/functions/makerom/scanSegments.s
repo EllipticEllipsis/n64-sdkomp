@@ -68,9 +68,9 @@ glabel scanSegments # 19
 /* 00C9FC 0040C9FC 318D0002 */  andi        $t5, $t4, 0x2
 /* 00CA00 0040CA00 11A0000D */  beqz        $t5, .L0040CA38
 /* 00CA04 0040CA04 00000000 */   nop
-/* 00CA08 0040CA08 8F998018 */  lw          $t9, %got(func_0040CB84)($gp)
+/* 00CA08 0040CA08 8F998018 */  lw          $t9, %got(sizeObject)($gp)
 /* 00CA0C 0040CA0C 8FA4002C */  lw          $a0, 0x2C($sp)
-/* 00CA10 0040CA10 2739CB84 */  addiu       $t9, $t9, %lo(func_0040CB84)
+/* 00CA10 0040CA10 2739CB84 */  addiu       $t9, $t9, %lo(sizeObject)
 /* 00CA14 0040CA14 0320F809 */  jalr        $t9
 /* 00CA18 0040CA18 00000000 */   nop
 /* 00CA1C 0040CA1C 2401FFFF */  addiu       $at, $zero, -0x1
@@ -87,9 +87,9 @@ glabel scanSegments # 19
 /* 00CA40 0040CA40 31F80004 */  andi        $t8, $t7, 0x4
 /* 00CA44 0040CA44 1300000B */  beqz        $t8, .L0040CA74
 /* 00CA48 0040CA48 00000000 */   nop
-/* 00CA4C 0040CA4C 8F998018 */  lw          $t9, %got(func_0040DA80)($gp)
+/* 00CA4C 0040CA4C 8F998018 */  lw          $t9, %got(sizeRaw)($gp)
 /* 00CA50 0040CA50 8FA4002C */  lw          $a0, 0x2C($sp)
-/* 00CA54 0040CA54 2739DA80 */  addiu       $t9, $t9, %lo(func_0040DA80)
+/* 00CA54 0040CA54 2739DA80 */  addiu       $t9, $t9, %lo(sizeRaw)
 /* 00CA58 0040CA58 0320F809 */  jalr        $t9
 /* 00CA5C 0040CA5C 00000000 */   nop
 /* 00CA60 0040CA60 2401FFFF */  addiu       $at, $zero, -0x1

@@ -5,12 +5,12 @@ glabel obj_section_type # 564
 /* 03561C 0043561C 0399E021 */  addu        $gp, $gp, $t9
 /* 035620 00435620 8F99851C */  lw          $t9, %call16(foreach_obj)($gp)
 /* 035624 00435624 00A03025 */  move        $a2, $a1
-/* 035628 00435628 8F858020 */  lw          $a1, %got(func_004355A0)($gp)
+/* 035628 00435628 8F858020 */  lw          $a1, %got(check_obj_sections)($gp)
 /* 03562C 0043562C 27BDFFE0 */  addiu       $sp, $sp, -0x20
 /* 035630 00435630 AFBF001C */  sw          $ra, 0x1C($sp)
 /* 035634 00435634 AFBC0018 */  sw          $gp, 0x18($sp)
 /* 035638 00435638 0320F809 */  jalr        $t9
-/* 03563C 0043563C 24A555A0 */   addiu      $a1, $a1, %lo(func_004355A0)
+/* 03563C 0043563C 24A555A0 */   addiu      $a1, $a1, %lo(check_obj_sections)
 /* 035640 00435640 2401FFFF */  addiu       $at, $zero, -0x1
 /* 035644 00435644 10410003 */  beq         $v0, $at, .L00435654
 /* 035648 00435648 8FBC0018 */   lw         $gp, 0x18($sp)

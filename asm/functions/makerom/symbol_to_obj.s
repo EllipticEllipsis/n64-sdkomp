@@ -16,10 +16,10 @@ glabel symbol_to_obj # 254
 /* 02C968 0042C968 8C42F134 */   lw         $v0, %lo(B_1000F134)($v0)
 .L0042C96C:
 /* 02C96C 0042C96C 8F99851C */  lw          $t9, %call16(foreach_obj)($gp)
-/* 02C970 0042C970 8F858020 */  lw          $a1, %got(func_0042C8E0)($gp)
+/* 02C970 0042C970 8F858020 */  lw          $a1, %got(check_symbol_range)($gp)
 /* 02C974 0042C974 AFA60024 */  sw          $a2, 0x24($sp)
 /* 02C978 0042C978 0320F809 */  jalr        $t9
-/* 02C97C 0042C97C 24A5C8E0 */   addiu      $a1, $a1, %lo(func_0042C8E0)
+/* 02C97C 0042C97C 24A5C8E0 */   addiu      $a1, $a1, %lo(check_symbol_range)
 /* 02C980 0042C980 2401FFFF */  addiu       $at, $zero, -0x1
 /* 02C984 0042C984 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 02C988 0042C988 8FA60024 */  lw          $a2, 0x24($sp)

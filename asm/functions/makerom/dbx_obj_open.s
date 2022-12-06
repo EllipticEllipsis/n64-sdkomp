@@ -62,9 +62,9 @@ glabel dbx_obj_open # 247
 /* 02B830 0042B830 10000009 */  b           .L0042B858
 /* 02B834 0042B834 00001025 */   move       $v0, $zero
 .L0042B838:
-/* 02B838 0042B838 8F998020 */  lw          $t9, %got(func_0042B0E0)($gp)
+/* 02B838 0042B838 8F998020 */  lw          $t9, %got(save_str)($gp)
 /* 02B83C 0042B83C 8FA40034 */  lw          $a0, 0x34($sp)
-/* 02B840 0042B840 2739B0E0 */  addiu       $t9, $t9, %lo(func_0042B0E0)
+/* 02B840 0042B840 2739B0E0 */  addiu       $t9, $t9, %lo(save_str)
 /* 02B844 0042B844 0320F809 */  jalr        $t9
 /* 02B848 0042B848 00000000 */   nop
 /* 02B84C 0042B84C 8FBC0020 */  lw          $gp, 0x20($sp)

@@ -35,10 +35,10 @@ glabel _elf_armem # 198
 /* 028928 00428928 10000118 */  b           .L00428D8C
 /* 02892C 0042892C AC2F0000 */   sw         $t7, 0x0($at)
 .L00428930:
-/* 028930 00428930 8F998020 */  lw          $t9, %got(func_00428600)($gp)
+/* 028930 00428930 8F998020 */  lw          $t9, %got(ck_mangle)($gp)
 /* 028934 00428934 8FA40040 */  lw          $a0, 0x40($sp)
 /* 028938 00428938 02002825 */  move        $a1, $s0
-/* 02893C 0042893C 27398600 */  addiu       $t9, $t9, %lo(func_00428600)
+/* 02893C 0042893C 27398600 */  addiu       $t9, $t9, %lo(ck_mangle)
 /* 028940 00428940 0320F809 */  jalr        $t9
 /* 028944 00428944 00000000 */   nop
 /* 028948 00428948 00408825 */  move        $s1, $v0
@@ -150,10 +150,10 @@ glabel _elf_armem # 198
 /* 028ACC 00428ACC 2901003A */  slti        $at, $t0, 0x3A
 /* 028AD0 00428AD0 10200020 */  beqz        $at, .L00428B54
 /* 028AD4 00428AD4 00000000 */   nop
-/* 028AD8 00428AD8 8F998020 */  lw          $t9, %got(func_00428784)($gp)
+/* 028AD8 00428AD8 8F998020 */  lw          $t9, %got(number)($gp)
 /* 028ADC 00428ADC 26040001 */  addiu       $a0, $s0, 0x1
 /* 028AE0 00428AE0 26050010 */  addiu       $a1, $s0, 0x10
-/* 028AE4 00428AE4 27398784 */  addiu       $t9, $t9, %lo(func_00428784)
+/* 028AE4 00428AE4 27398784 */  addiu       $t9, $t9, %lo(number)
 /* 028AE8 00428AE8 0320F809 */  jalr        $t9
 /* 028AEC 00428AEC 2406000A */   addiu      $a2, $zero, 0xA
 /* 028AF0 00428AF0 8FA90040 */  lw          $t1, 0x40($sp)
@@ -280,55 +280,55 @@ glabel _elf_armem # 198
 /* 028CB0 00428CB0 AE200000 */  sw          $zero, 0x0($s1)
 /* 028CB4 00428CB4 AE2A0020 */  sw          $t2, 0x20($s1)
 .L00428CB8:
-/* 028CB8 00428CB8 8F998020 */  lw          $t9, %got(func_00428784)($gp)
+/* 028CB8 00428CB8 8F998020 */  lw          $t9, %got(number)($gp)
 /* 028CBC 00428CBC 26040010 */  addiu       $a0, $s0, 0x10
 /* 028CC0 00428CC0 2605001C */  addiu       $a1, $s0, 0x1C
-/* 028CC4 00428CC4 27398784 */  addiu       $t9, $t9, %lo(func_00428784)
+/* 028CC4 00428CC4 27398784 */  addiu       $t9, $t9, %lo(number)
 /* 028CC8 00428CC8 0320F809 */  jalr        $t9
 /* 028CCC 00428CCC 2406000A */   addiu      $a2, $zero, 0xA
 /* 028CD0 00428CD0 8FBC0020 */  lw          $gp, 0x20($sp)
 /* 028CD4 00428CD4 00606025 */  move        $t4, $v1
 /* 028CD8 00428CD8 AE2C0004 */  sw          $t4, 0x4($s1)
-/* 028CDC 00428CDC 8F998020 */  lw          $t9, %got(func_00428784)($gp)
+/* 028CDC 00428CDC 8F998020 */  lw          $t9, %got(number)($gp)
 /* 028CE0 00428CE0 2604001C */  addiu       $a0, $s0, 0x1C
 /* 028CE4 00428CE4 26050022 */  addiu       $a1, $s0, 0x22
-/* 028CE8 00428CE8 27398784 */  addiu       $t9, $t9, %lo(func_00428784)
+/* 028CE8 00428CE8 27398784 */  addiu       $t9, $t9, %lo(number)
 /* 028CEC 00428CEC 0320F809 */  jalr        $t9
 /* 028CF0 00428CF0 2406000A */   addiu      $a2, $zero, 0xA
 /* 028CF4 00428CF4 8FBC0020 */  lw          $gp, 0x20($sp)
 /* 028CF8 00428CF8 00606825 */  move        $t5, $v1
 /* 028CFC 00428CFC AE2D0008 */  sw          $t5, 0x8($s1)
-/* 028D00 00428D00 8F998020 */  lw          $t9, %got(func_00428784)($gp)
+/* 028D00 00428D00 8F998020 */  lw          $t9, %got(number)($gp)
 /* 028D04 00428D04 26040022 */  addiu       $a0, $s0, 0x22
 /* 028D08 00428D08 26050028 */  addiu       $a1, $s0, 0x28
-/* 028D0C 00428D0C 27398784 */  addiu       $t9, $t9, %lo(func_00428784)
+/* 028D0C 00428D0C 27398784 */  addiu       $t9, $t9, %lo(number)
 /* 028D10 00428D10 0320F809 */  jalr        $t9
 /* 028D14 00428D14 2406000A */   addiu      $a2, $zero, 0xA
 /* 028D18 00428D18 8FBC0020 */  lw          $gp, 0x20($sp)
 /* 028D1C 00428D1C 00604825 */  move        $t1, $v1
 /* 028D20 00428D20 AE29000C */  sw          $t1, 0xC($s1)
-/* 028D24 00428D24 8F998020 */  lw          $t9, %got(func_00428784)($gp)
+/* 028D24 00428D24 8F998020 */  lw          $t9, %got(number)($gp)
 /* 028D28 00428D28 26040028 */  addiu       $a0, $s0, 0x28
 /* 028D2C 00428D2C 26050030 */  addiu       $a1, $s0, 0x30
-/* 028D30 00428D30 27398784 */  addiu       $t9, $t9, %lo(func_00428784)
+/* 028D30 00428D30 27398784 */  addiu       $t9, $t9, %lo(number)
 /* 028D34 00428D34 0320F809 */  jalr        $t9
 /* 028D38 00428D38 24060008 */   addiu      $a2, $zero, 0x8
 /* 028D3C 00428D3C 8FBC0020 */  lw          $gp, 0x20($sp)
 /* 028D40 00428D40 0060C025 */  move        $t8, $v1
 /* 028D44 00428D44 AE380010 */  sw          $t8, 0x10($s1)
-/* 028D48 00428D48 8F998020 */  lw          $t9, %got(func_00428784)($gp)
+/* 028D48 00428D48 8F998020 */  lw          $t9, %got(number)($gp)
 /* 028D4C 00428D4C 26040030 */  addiu       $a0, $s0, 0x30
 /* 028D50 00428D50 2605003A */  addiu       $a1, $s0, 0x3A
-/* 028D54 00428D54 27398784 */  addiu       $t9, $t9, %lo(func_00428784)
+/* 028D54 00428D54 27398784 */  addiu       $t9, $t9, %lo(number)
 /* 028D58 00428D58 0320F809 */  jalr        $t9
 /* 028D5C 00428D5C 2406000A */   addiu      $a2, $zero, 0xA
 /* 028D60 00428D60 8FBC0020 */  lw          $gp, 0x20($sp)
 /* 028D64 00428D64 0060C825 */  move        $t9, $v1
 /* 028D68 00428D68 AE390014 */  sw          $t9, 0x14($s1)
-/* 028D6C 00428D6C 8F998020 */  lw          $t9, %got(func_004286E0)($gp)
+/* 028D6C 00428D6C 8F998020 */  lw          $t9, %got(do_mangle)($gp)
 /* 028D70 00428D70 8FA40040 */  lw          $a0, 0x40($sp)
 /* 028D74 00428D74 02002825 */  move        $a1, $s0
-/* 028D78 00428D78 273986E0 */  addiu       $t9, $t9, %lo(func_004286E0)
+/* 028D78 00428D78 273986E0 */  addiu       $t9, $t9, %lo(do_mangle)
 /* 028D7C 00428D7C 0320F809 */  jalr        $t9
 /* 028D80 00428D80 02203025 */   move       $a2, $s1
 /* 028D84 00428D84 8FBC0020 */  lw          $gp, 0x20($sp)

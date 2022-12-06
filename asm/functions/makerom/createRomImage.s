@@ -256,8 +256,8 @@ glabel createRomImage # 25
 /* 00E998 0040E998 10000220 */  b           .L0040F21C
 /* 00E99C 0040E99C 2402FFFF */   addiu      $v0, $zero, -0x1
 .L0040E9A0:
-/* 00E9A0 0040E9A0 8F998018 */  lw          $t9, %got(func_0040F22C)($gp)
-/* 00E9A4 0040E9A4 2739F22C */  addiu       $t9, $t9, %lo(func_0040F22C)
+/* 00E9A0 0040E9A0 8F998018 */  lw          $t9, %got(openAouts)($gp)
+/* 00E9A4 0040E9A4 2739F22C */  addiu       $t9, $t9, %lo(openAouts)
 /* 00E9A8 0040E9A8 0320F809 */  jalr        $t9
 /* 00E9AC 0040E9AC 00000000 */   nop
 /* 00E9B0 0040E9B0 10400003 */  beqz        $v0, .L0040E9C0
@@ -275,9 +275,9 @@ glabel createRomImage # 25
 /* 00E9D8 0040E9D8 33280002 */  andi        $t0, $t9, 0x2
 /* 00E9DC 0040E9DC 11000008 */  beqz        $t0, .L0040EA00
 /* 00E9E0 0040E9E0 00000000 */   nop
-/* 00E9E4 0040E9E4 8F998018 */  lw          $t9, %got(func_0040F8B4)($gp)
+/* 00E9E4 0040E9E4 8F998018 */  lw          $t9, %got(readObject)($gp)
 /* 00E9E8 0040E9E8 8FA40058 */  lw          $a0, 0x58($sp)
-/* 00E9EC 0040E9EC 2739F8B4 */  addiu       $t9, $t9, %lo(func_0040F8B4)
+/* 00E9EC 0040E9EC 2739F8B4 */  addiu       $t9, $t9, %lo(readObject)
 /* 00E9F0 0040E9F0 0320F809 */  jalr        $t9
 /* 00E9F4 0040E9F4 00000000 */   nop
 /* 00E9F8 0040E9F8 1000000C */  b           .L0040EA2C
@@ -288,9 +288,9 @@ glabel createRomImage # 25
 /* 00EA08 0040EA08 314B0004 */  andi        $t3, $t2, 0x4
 /* 00EA0C 0040EA0C 11600007 */  beqz        $t3, .L0040EA2C
 /* 00EA10 0040EA10 00000000 */   nop
-/* 00EA14 0040EA14 8F998018 */  lw          $t9, %got(func_0040FF3C)($gp)
+/* 00EA14 0040EA14 8F998018 */  lw          $t9, %got(readRaw)($gp)
 /* 00EA18 0040EA18 8FA40058 */  lw          $a0, 0x58($sp)
-/* 00EA1C 0040EA1C 2739FF3C */  addiu       $t9, $t9, %lo(func_0040FF3C)
+/* 00EA1C 0040EA1C 2739FF3C */  addiu       $t9, $t9, %lo(readRaw)
 /* 00EA20 0040EA20 0320F809 */  jalr        $t9
 /* 00EA24 0040EA24 00000000 */   nop
 /* 00EA28 0040EA28 8FBC0018 */  lw          $gp, 0x18($sp)

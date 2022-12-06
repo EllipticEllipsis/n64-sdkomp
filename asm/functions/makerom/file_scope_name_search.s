@@ -19,10 +19,10 @@ glabel file_scope_name_search # 617
 /* 03D0B0 0043D0B0 1000000C */  b           .L0043D0E4
 /* 03D0B4 0043D0B4 2402FFFF */   addiu      $v0, $zero, -0x1
 .L0043D0B8:
-/* 03D0B8 0043D0B8 8F998024 */  lw          $t9, %got(func_0043CCB0)($gp)
+/* 03D0B8 0043D0B8 8F998024 */  lw          $t9, %got(scope_name_to_sym)($gp)
 /* 03D0BC 0043D0BC 8FAE0034 */  lw          $t6, 0x34($sp)
 /* 03D0C0 0043D0C0 8FAF0038 */  lw          $t7, 0x38($sp)
-/* 03D0C4 0043D0C4 2739CCB0 */  addiu       $t9, $t9, %lo(func_0043CCB0)
+/* 03D0C4 0043D0C4 2739CCB0 */  addiu       $t9, $t9, %lo(scope_name_to_sym)
 /* 03D0C8 0043D0C8 8FA40028 */  lw          $a0, 0x28($sp)
 /* 03D0CC 0043D0CC 8FA6002C */  lw          $a2, 0x2C($sp)
 /* 03D0D0 0043D0D0 8FA70030 */  lw          $a3, 0x30($sp)

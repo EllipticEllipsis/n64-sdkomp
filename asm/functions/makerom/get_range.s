@@ -4,13 +4,13 @@ glabel get_range # 632
 # _gp_disp: 0xFBD4D78
 /* 03DFF0 0043DFF0 0399E021 */  addu        $gp, $gp, $t9
 /* 03DFF4 0043DFF4 27BDFFB8 */  addiu       $sp, $sp, -0x48
-/* 03DFF8 0043DFF8 8F998024 */  lw          $t9, %got(func_0043DBB0)($gp)
+/* 03DFF8 0043DFF8 8F998024 */  lw          $t9, %got(set_paux)($gp)
 /* 03DFFC 0043DFFC AFA5004C */  sw          $a1, 0x4C($sp)
 /* 03E000 0043E000 AFBF0024 */  sw          $ra, 0x24($sp)
 /* 03E004 0043E004 AFB00018 */  sw          $s0, 0x18($sp)
 /* 03E008 0043E008 AFA60050 */  sw          $a2, 0x50($sp)
 /* 03E00C 0043E00C 00C02825 */  move        $a1, $a2
-/* 03E010 0043E010 2739DBB0 */  addiu       $t9, $t9, %lo(func_0043DBB0)
+/* 03E010 0043E010 2739DBB0 */  addiu       $t9, $t9, %lo(set_paux)
 /* 03E014 0043E014 00808025 */  move        $s0, $a0
 /* 03E018 0043E018 AFBC0020 */  sw          $gp, 0x20($sp)
 /* 03E01C 0043E01C AFB1001C */  sw          $s1, 0x1C($sp)
@@ -19,10 +19,10 @@ glabel get_range # 632
 /* 03E028 0043E028 8FBC0020 */  lw          $gp, 0x20($sp)
 /* 03E02C 0043E02C 8C460000 */  lw          $a2, 0x0($v0)
 /* 03E030 0043E030 27A40030 */  addiu       $a0, $sp, 0x30
-/* 03E034 0043E034 8F998024 */  lw          $t9, %got(func_0043DD14)($gp)
+/* 03E034 0043E034 8F998024 */  lw          $t9, %got(AUX)($gp)
 /* 03E038 0043E038 02002825 */  move        $a1, $s0
 /* 03E03C 0043E03C 24070001 */  addiu       $a3, $zero, 0x1
-/* 03E040 0043E040 2739DD14 */  addiu       $t9, $t9, %lo(func_0043DD14)
+/* 03E040 0043E040 2739DD14 */  addiu       $t9, $t9, %lo(AUX)
 /* 03E044 0043E044 24510004 */  addiu       $s1, $v0, 0x4
 /* 03E048 0043E048 0320F809 */  jalr        $t9
 /* 03E04C 0043E04C AFA60008 */   sw         $a2, 0x8($sp)
@@ -32,10 +32,10 @@ glabel get_range # 632
 /* 03E05C 0043E05C 00182502 */  srl         $a0, $t8, 20
 /* 03E060 0043E060 1481000D */  bne         $a0, $at, .L0043E098
 /* 03E064 0043E064 AFB80034 */   sw         $t8, 0x34($sp)
-/* 03E068 0043E068 8F998024 */  lw          $t9, %got(func_0043DD14)($gp)
+/* 03E068 0043E068 8F998024 */  lw          $t9, %got(AUX)($gp)
 /* 03E06C 0043E06C 8E260000 */  lw          $a2, 0x0($s1)
 /* 03E070 0043E070 27A40030 */  addiu       $a0, $sp, 0x30
-/* 03E074 0043E074 2739DD14 */  addiu       $t9, $t9, %lo(func_0043DD14)
+/* 03E074 0043E074 2739DD14 */  addiu       $t9, $t9, %lo(AUX)
 /* 03E078 0043E078 02002825 */  move        $a1, $s0
 /* 03E07C 0043E07C 24070004 */  addiu       $a3, $zero, 0x4
 /* 03E080 0043E080 26310004 */  addiu       $s1, $s1, 0x4
@@ -92,11 +92,11 @@ glabel get_range # 632
 /* 03E13C 0043E13C 3421FFFF */  ori         $at, $at, (0xFFFFF & 0xFFFF)
 /* 03E140 0043E140 032A5821 */  addu        $t3, $t9, $t2
 /* 03E144 0043E144 01816824 */  and         $t5, $t4, $at
-/* 03E148 0043E148 8F998024 */  lw          $t9, %got(func_0043DD14)($gp)
+/* 03E148 0043E148 8F998024 */  lw          $t9, %got(AUX)($gp)
 /* 03E14C 0043E14C 016D7821 */  addu        $t7, $t3, $t5
 /* 03E150 0043E150 AF0F0018 */  sw          $t7, 0x18($t8)
 /* 03E154 0043E154 8E260000 */  lw          $a2, 0x0($s1)
-/* 03E158 0043E158 2739DD14 */  addiu       $t9, $t9, %lo(func_0043DD14)
+/* 03E158 0043E158 2739DD14 */  addiu       $t9, $t9, %lo(AUX)
 /* 03E15C 0043E15C 27A40030 */  addiu       $a0, $sp, 0x30
 /* 03E160 0043E160 02002825 */  move        $a1, $s0
 /* 03E164 0043E164 24070004 */  addiu       $a3, $zero, 0x4
@@ -106,11 +106,11 @@ glabel get_range # 632
 /* 03E174 0043E174 8FBC0020 */  lw          $gp, 0x20($sp)
 /* 03E178 0043E178 8FAA0030 */  lw          $t2, 0x30($sp)
 /* 03E17C 0043E17C 8FAC0050 */  lw          $t4, 0x50($sp)
-/* 03E180 0043E180 8F998024 */  lw          $t9, %got(func_0043DD14)($gp)
+/* 03E180 0043E180 8F998024 */  lw          $t9, %got(AUX)($gp)
 /* 03E184 0043E184 27A40030 */  addiu       $a0, $sp, 0x30
 /* 03E188 0043E188 AD8A001C */  sw          $t2, 0x1C($t4)
 /* 03E18C 0043E18C 8E260000 */  lw          $a2, 0x0($s1)
-/* 03E190 0043E190 2739DD14 */  addiu       $t9, $t9, %lo(func_0043DD14)
+/* 03E190 0043E190 2739DD14 */  addiu       $t9, $t9, %lo(AUX)
 /* 03E194 0043E194 02002825 */  move        $a1, $s0
 /* 03E198 0043E198 24070004 */  addiu       $a3, $zero, 0x4
 /* 03E19C 0043E19C 0320F809 */  jalr        $t9

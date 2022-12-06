@@ -51,10 +51,10 @@ glabel st_find_symbol # 621
 /* 03D520 0043D520 8FB8003C */  lw          $t8, 0x3C($sp)
 /* 03D524 0043D524 00403025 */  move        $a2, $v0
 /* 03D528 0043D528 AFB90014 */  sw          $t9, 0x14($sp)
-/* 03D52C 0043D52C 8F998024 */  lw          $t9, %got(func_0043CCB0)($gp)
+/* 03D52C 0043D52C 8F998024 */  lw          $t9, %got(scope_name_to_sym)($gp)
 /* 03D530 0043D530 8FA70038 */  lw          $a3, 0x38($sp)
 /* 03D534 0043D534 AFA40030 */  sw          $a0, 0x30($sp)
-/* 03D538 0043D538 2739CCB0 */  addiu       $t9, $t9, %lo(func_0043CCB0)
+/* 03D538 0043D538 2739CCB0 */  addiu       $t9, $t9, %lo(scope_name_to_sym)
 /* 03D53C 0043D53C 0320F809 */  jalr        $t9
 /* 03D540 0043D540 AFB80010 */   sw         $t8, 0x10($sp)
 /* 03D544 0043D544 2401FFFF */  addiu       $at, $zero, -0x1

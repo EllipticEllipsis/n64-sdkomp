@@ -16,10 +16,10 @@ glabel procedure_to_obj # 256
 /* 02CA40 0042CA40 8C42F13C */   lw         $v0, %lo(B_1000F13C)($v0)
 .L0042CA44:
 /* 02CA44 0042CA44 8F99851C */  lw          $t9, %call16(foreach_obj)($gp)
-/* 02CA48 0042CA48 8F858020 */  lw          $a1, %got(func_0042C9BC)($gp)
+/* 02CA48 0042CA48 8F858020 */  lw          $a1, %got(check_procedure_range)($gp)
 /* 02CA4C 0042CA4C AFA60024 */  sw          $a2, 0x24($sp)
 /* 02CA50 0042CA50 0320F809 */  jalr        $t9
-/* 02CA54 0042CA54 24A5C9BC */   addiu      $a1, $a1, %lo(func_0042C9BC)
+/* 02CA54 0042CA54 24A5C9BC */   addiu      $a1, $a1, %lo(check_procedure_range)
 /* 02CA58 0042CA58 2401FFFF */  addiu       $at, $zero, -0x1
 /* 02CA5C 0042CA5C 8FBC0018 */  lw          $gp, 0x18($sp)
 /* 02CA60 0042CA60 8FA60024 */  lw          $a2, 0x24($sp)
