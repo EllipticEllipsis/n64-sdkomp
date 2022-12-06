@@ -1,6 +1,5 @@
 #include "makerom.h"
 
-
 // External declarations
 
 int readCoff(char* fname, unsigned int* buf);
@@ -15,9 +14,7 @@ int createSegmentSymbols(char* source, char* object);
 int createRomImage(char* romFile, char* object);
 int createEntryFile(char* source, char* object);
 
-
 int yyparse();
-
 
 extern int optind;
 extern char* optarg;
@@ -52,8 +49,8 @@ static char B_1000B840[0x100]; // entryObject
 static char B_1000B940[0x100]; // objectListFile
 
 static char* D_10009220 = "rom"; // romFile
-static int D_10009224 = 1; // checkOverlap
-static char* B_1000BA40; // progName
+static int D_10009224 = 1;       // checkOverlap
+static char* B_1000BA40;         // progName
 
 Segment* segmentList = NULL;
 Wave* waveList = NULL;
@@ -82,9 +79,9 @@ char* headerBuf;
 size_t* pif2bootBuf;
 void* fontBuf;
 
-int bootWordAlignedByteSize; // size_t?
+int bootWordAlignedByteSize;     // size_t?
 int pif2bootWordAlignedByteSize; // size_t?
-int headerWordAlignedByteSize; // size_t?
+int headerWordAlignedByteSize;   // size_t?
 int fontdataWordAlignedByteSize;
 
 // Have to use defines since an enum would show up in mdebug
@@ -354,7 +351,7 @@ int main(int argc, char** argv) {
         if ((execCommand(NameBuf) == -1) && !keep_going) {
             unlinkTempFiles();
             exit(1);
-        }        
+        }
     }
 
     if (gcord) {
@@ -371,7 +368,7 @@ int main(int argc, char** argv) {
                 exit(1);
             }
             strcat(strcpy(gcordFileBuf, wave->name), ".cord");
-            strcpy(wave->name, gcordFileBuf);            
+            strcpy(wave->name, gcordFileBuf);
         }
     }
 
@@ -459,7 +456,7 @@ int checkIdoVersion(char* rootName) {
     } else {
         u64CheckFound = 1;
     }
-    
+
     // Check if the fourth line of the output of this command contains "7.0"
     sprintf(cmd, "/usr/sbin/showprods -D 1 dev");
     if ((procPtr = popen(cmd, "r")) != NULL) { //! @bug `v70Found` used uninitialised if this is false
@@ -771,7 +768,7 @@ static void unlinkTempFiles(void) {
 
     if (!debug) {
         for (wave = waveList; wave != NULL; wave = wave->next) {
-                unlink(wave->elspecFile);
+            unlink(wave->elspecFile);
         }
         unlink(B_1000B540);
         unlink(B_1000B640);
@@ -795,7 +792,7 @@ int execCommand(char* s) {
     } else if (WIFEXITED(status) && (WEXITSTATUS(status) == 0)) {
         return 0;
     } else if (keep_going && WIFEXITED(status) && (WEXITSTATUS(status) == 1)) {
-            return 1;
+        return 1;
     } else {
         if (debug) {
             fprintf(stderr, "makerom: [%s] returned %d (%08x), errno=%d\n", s, WEXITSTATUS(status), status, errno);
