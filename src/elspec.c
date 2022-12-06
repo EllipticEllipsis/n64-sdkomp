@@ -23,7 +23,7 @@ int createElspec(Wave* wave) {
         s = sc->segment;
 
         // ?
-        if (!(s->textSize & 2)) {
+        if (!(s->flags & 2)) {
             continue;
         }
 
@@ -31,12 +31,12 @@ int createElspec(Wave* wave) {
         fprintf(f, "beginseg\n");
         fprintf(f, "\tsegtype LOAD\n");
         fprintf(f, "\tsegflags R X\n");
-        fprintf(f, "\tvaddr 0x%x\n", s->addrFunc);
+        fprintf(f, "\tvaddr 0x%x\n", s->address);
         fprintf(f, "\tcontents\n");
         fprintf(f, "\tbeginscn .%s.text\n", s->name);
         fprintf(f, "\t\tscntype PROGBITS\n");
-        if (s->dataAlign != 0) {
-            fprintf(f, "\t\tscnalign %d\n", s->dataAlign);
+        if (s->textAlign != 0) {
+            fprintf(f, "\t\tscnalign %d\n", s->textAlign);
         }
         fprintf(f, "\t\tscnflags ALLOC EXECINSTR\n");
         for (p = s->pathList; p != NULL; p = p->next) {
@@ -47,8 +47,8 @@ int createElspec(Wave* wave) {
         // .data and .rodata
         fprintf(f, "\tbeginscn .%s.data\n", s->name);
         fprintf(f, "\t\tscntype PROGBITS\n");
-        if (s->sdataAlign != 0) {
-            fprintf(f, "\t\tscnalign %d\n", s->sdataAlign);
+        if (s->dataAlign != 0) {
+            fprintf(f, "\t\tscnalign %d\n", s->dataAlign);
         }
         fprintf(f, "\t\tscnflags ALLOC WRITE\n");
         for (p = s->pathList; p != NULL; p = p->next) {
@@ -60,8 +60,8 @@ int createElspec(Wave* wave) {
         // .sdata
         fprintf(f, "\tbeginscn .%s.sdata\n", s->name);
         fprintf(f, "\t\tscntype PROGBITS\n");
-        if (s->sbssAlign != 0) {
-            fprintf(f, "\t\tscnalign %d\n", s->sbssAlign);
+        if (s->sdataAlign != 0) {
+            fprintf(f, "\t\tscnalign %d\n", s->sdataAlign);
         }
         fprintf(f, "\t\tscnflags GPREL ALLOC WRITE\n");
         for (p = s->pathList; p != NULL; p = p->next) {
@@ -72,8 +72,8 @@ int createElspec(Wave* wave) {
         // .sbss
         fprintf(f, "\tbeginscn .%s.sbss\n", s->name);
         fprintf(f, "\t\tscntype NOBITS\n");
-        if (s->bssAlign != 0) {
-            fprintf(f, "\t\tscnalign %d\n", s->bssAlign);
+        if (s->sbssAlign != 0) {
+            fprintf(f, "\t\tscnalign %d\n", s->sbssAlign);
         }
         fprintf(f, "\t\tscnflags GPREL ALLOC WRITE\n");
         for (p = s->pathList; p != NULL; p = p->next) {
@@ -84,8 +84,8 @@ int createElspec(Wave* wave) {
         // .bss
         fprintf(f, "\tbeginscn .%s.bss\n", s->name);
         fprintf(f, "\t\tscntype NOBITS\n");
-        if (s->sectionsExisting != 0) {
-            fprintf(f, "\t\tscnalign %d\n", s->sectionsExisting);
+        if (s->bssAlign != 0) {
+            fprintf(f, "\t\tscnalign %d\n", s->bssAlign);
         }
         fprintf(f, "\t\tscnflags ALLOC WRITE\n");
         for (p = s->pathList; p != NULL; p = p->next) {
@@ -143,7 +143,7 @@ int runLinker(Wave* wave, char* symbolFile, char* objListFile) {
     for (sc = wave->segmentChain; sc != NULL; sc = sc->next) {
         s = sc->segment;
 
-        if (!(s->textSize & 2)) {
+        if (!(s->flags & 2)) {
             continue;
         }
 
