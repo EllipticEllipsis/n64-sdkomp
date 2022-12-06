@@ -5,10 +5,12 @@ DISASM_COMMAND := python3 -m spimdisasm.elfObjDisasm --no-emit-cpload --Mreg-nam
 all: check
 
 setup:
+	make -C tools/recomp setup
 	make -C tools/recomp VERSION=5.3
 	make -C tools/recomp VERSION=7.1
 
 disasm:
+	$(RM) asm
 	$(DISASM_COMMAND) --split-functions asm/functions --save-context context/makerom.csv makerom asm/makerom
 
 check:
