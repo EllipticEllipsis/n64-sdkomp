@@ -18,6 +18,7 @@ static int checkOverlap;
 
 static unsigned char* progName;
 
+#pragma GLOBAL_ASM("asm/functions/makerom/main.s")
 int main(int argc, unsigned char** argv);
 //{
 //    int c;
@@ -41,10 +42,12 @@ int main(int argc, unsigned char** argv);
 //    }
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/usage.s")
 void usage();
 //{
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/usage.s")
 void getOsVersion();
 //{
 //    unsigned char* cmd;
@@ -52,6 +55,7 @@ void getOsVersion();
 //    FILE* procPtr;
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/checkIdoVersion.s")
 int checkIdoVersion(unsigned char* rootName);
 //{
 //    int u64CheckFound;
@@ -62,10 +66,12 @@ int checkIdoVersion(unsigned char* rootName);
 //    FILE* procPtr;
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/printVersion.s")
 void printVersion();
 //{
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/getBootFile.s")
 void getBootFile(unsigned char* bootFileName);
 //{
 //    int bootFd;
@@ -74,6 +80,7 @@ void getBootFile(unsigned char* bootFileName);
 //    unsigned char errMessage[255];
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/getPif2BootFile.s")
 void getPif2BootFile(unsigned char* pif2bootFileName);
 //{
 //    int pif2bootFd;
@@ -82,6 +89,7 @@ void getPif2BootFile(unsigned char* pif2bootFileName);
 //    unsigned char errMessage[255];
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/getRomheaderFile.s")
 void getRomheaderFile(unsigned char* headerFileName);
 //{
 //    int headerFd;
@@ -95,6 +103,7 @@ void getRomheaderFile(unsigned char* headerFileName);
 //    int retval;
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/getFontDataFile.s")
 void getFontDataFile(unsigned char* fontFileName);
 //{
 //    int fontFd;
@@ -103,6 +112,7 @@ void getFontDataFile(unsigned char* fontFileName);
 //    unsigned char errMessage[255];
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/gloadFindFile.s")
 unsigned char* gloadFindFile(unsigned char* fullpath, unsigned char* postRootSuffix, unsigned char* fname);
 //{
 //    unsigned char* rootname;
@@ -111,25 +121,30 @@ unsigned char* gloadFindFile(unsigned char* fullpath, unsigned char* postRootSuf
 //    int try;
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/doWave.s")
 void doWave(Wave* wave);
 //{
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/nameTempFiles.s")
 void nameTempFiles();
 //{
 //    Wave* wave;
 //    unsigned char* tmpdir;
 //}
 
-void unlinkTempFiles();
+#pragma GLOBAL_ASM("asm/functions/makerom/unlinkTempFiles.s")
+static void unlinkTempFiles();
 //{
 //    Wave* wave;
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/cleanup.s")
 void cleanup(int sig);
 //{
 //}
 
+#pragma GLOBAL_ASM("asm/functions/makerom/execCommand.s")
 int execCommand(unsigned char* s);
 //{
 //    int status;
