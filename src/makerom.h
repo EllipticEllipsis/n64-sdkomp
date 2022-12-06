@@ -33,7 +33,7 @@
 
 typedef struct Path_s {
     /* 0x0 */ struct Path_s* next;
-    /* 0x4 */ unsigned char* name;
+    /* 0x4 */ char* name;
     /* 0x8 */ unsigned int textSize;
     /* 0xC */ unsigned int dataSize;
     /* 0x10 */ unsigned int sdataSize;
@@ -54,7 +54,7 @@ typedef struct Path_s {
 
 typedef struct Segment_s {
     /* 0x0 */ struct Segment_s* next;
-    /* 0x4 */ unsigned char* name;
+    /* 0x4 */ char* name;
     /* 0x8 */ Path* pathList;
     /* 0x10 */ unsigned int address;
     /* 0x14 */ int addrFunc;
@@ -91,11 +91,11 @@ typedef struct SegmentChain_s {
 
 typedef struct Wave_s {
     /* 0x0 */ struct Wave_s* next;
-    /* 0x4 */ unsigned char* name;
+    /* 0x4 */ char* name;
     /* 0x8 */ SegmentChain* segmentChain;
     /* 0xC */ Elf* elf;
     /* 0x10 */ Elf32_Ehdr* ehdr;
-    /* 0x14 */ unsigned char elspecFile[255];
+    /* 0x14 */ char elspecFile[255];
     /* 0x114 */ int fd;
     /* 0x118 */ size_t searchIndex;
 } Wave;

@@ -4,6 +4,8 @@
         "elf.h": "c",
         "libelf.h": "c",
         "makerom.h": "c",
-        "sgidefs.h": "c"
+        "sgidefs.h": "c",
+        "siginfo.h": "c",
+        "signal.h": "c"
     }
 }

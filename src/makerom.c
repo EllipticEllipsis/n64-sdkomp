@@ -1,22 +1,49 @@
 #include "makerom.h"
 
-static const sigaction_t act;
 
-// static unsigned char segmentSymbolSource[255];
+// External declarations
 
-// static unsigned char segmentSymbolObject[255];
+int readCoff(char* fname, unsigned int* buf);
 
-// static unsigned char entrySource[255];
+int createElspec(Wave* wave);
+int runLinker(Wave* wave, char* symbolFile, char* objListFile);
 
-// static unsigned char entryObject[255];
+int scanSegments();
+int checkSizes();
+int checkOverlaps();
+int createSegmentSymbols(char* source, char* object);
+int createRomImage(char* romFile, char* object);
+int createEntryFile(char* source, char* object);
 
-// static unsigned char objectListFile[255];
 
-static unsigned char romFile[] = "rom";
+int yyparse();
 
-// static int checkOverlap;
 
-// static unsigned char* progName;
+extern int optind;
+extern char* optarg;
+extern FILE* yyin;
+
+// Data and bss
+
+// static const sigaction_t act;
+
+// static char segmentSymbolSource[255];
+
+// static char segmentSymbolObject[255];
+
+// static char entrySource[255];
+
+// static char entryObject[255];
+
+// static char objectListFile[255];
+
+// static char romFile[] = "rom";
+
+// static int checkOverlap = 1;
+
+// static char* progName;
+
+static sigaction_t D_10009200 = { 0 }; // Need to correct
 
 static char B_1000B540[0x100]; // segmentSymbolSource
 static char B_1000B640[0x100]; // segmentSymbolObject
@@ -24,198 +51,218 @@ static char B_1000B740[0x100]; // entrySource
 static char B_1000B840[0x100]; // entryObject
 static char B_1000B940[0x100]; // objectListFile
 
+static char* D_10009220 = "rom"; // romFile
+static int D_10009224 = 1; // checkOverlap
 static char* B_1000BA40; // progName
 
-extern int debug;
-extern int keep_going;
-extern Wave* waveList;
-extern size_t* bootBuf;
-extern int bootWordAlignedByteSize;
-extern size_t* pif2bootBuf;
-extern int pif2bootWordAlignedByteSize;
-extern char* headerBuf;
-extern int headerWordAlignedByteSize;
-extern void* fontBuf;
-extern size_t fontdataWordAlignedByteSize;
+Segment* segmentList = NULL;
+Wave* waveList = NULL;
 
+int debug = 0;
+int cosim = 0;
+int emulator = 0;
+int nofont = 0;
+int finalromSize = 0; // size_t?
+char fillData = 0xFF;
+int offset = 0;
+int changeclock = 0;
+int clockrate = 0;
+int keep_going = 0;
 
-// #pragma GLOBAL_ASM("asm/functions/makerom/main.s")
-int main(int argc, unsigned char** argv);
-//{
-//    int c;
-//    FILE* f;
-//    Wave* wave;
-//    unsigned char* cppCmd;
-//    long cppCmdCount;
-//    int headerFd;
-//    int pif2bootFd;
-//    unsigned char* bootFileName;
-//    unsigned char* headerFileName;
-//    unsigned char* pif2bootFileName;
-//    unsigned char* fontFileName;
-//    int createRom;
-//    unsigned char CheckerBuf[255];
-//    unsigned char NameBuf[255];
-//    unsigned char* rootName;
-//    int quietMode;
-//    {
-//        unsigned char gcordFileBuf[255];
-//    }
-//}
+char* fileName;
+char* bootEntryName;
+char* bootStackName;
+// size_t bootStackOffset;
+int loadMap;
+int gcord;
 
-int yyparse();
+// Types of all these are not clear as yet
+size_t* bootBuf;
+char* headerBuf;
+size_t* pif2bootBuf;
+void* fontBuf;
 
-static sigaction_t D_10009200 = { 0 }; // Need to correct
-static char* D_10009220 = "rom";
-static int D_10009224 = 1;
-extern int changeclock;
-extern int clockrate;
-extern int cosim;
-extern int debug;
-extern int emulator;
-extern char* fileName;
-extern char fillData;
-extern int finalromSize;
-extern int gcord;
-extern int loadMap;
-extern int nofont;
-extern int offset;
-extern char* optarg;
-extern int optind;
-extern int yyin;
+int bootWordAlignedByteSize; // size_t?
+int pif2bootWordAlignedByteSize; // size_t?
+int headerWordAlignedByteSize; // size_t?
+int fontdataWordAlignedByteSize;
 
-int main(int argc, unsigned char** argv) {
-    int sp364;
-    int pad;
-    Wave* sp35C;
-    char* sp358;
-    int sp354;
-    int pad2[2];
-    char* sp348;
-    char* sp344;
-    char* sp340;
-    int sp33C;
-    int sp338;
-    char sp238[0x100];
-    char sp138[0x100];
-    char* sp134;
-    int sp130;
-    char sp30[0x100];
+// Have to use defines since an enum would show up in mdebug
+#define IRIX_VERSION_53 0
+#define IRIX_VERSION_62 1
+#define IRIX_VERSION_63 2
+#define IRIX_VERSION_64 3
+#define IRIX_VERSION_UNKNOWN 4
 
-    sp348 = NULL;
-    sp344 = NULL;
-    sp340 = NULL;
-    sp33C = 0;
-    sp338 = 1;
-    sp130 = 0;
+int irixVersion;
+
+static void usage();
+static void getOsVersion();
+static int checkIdoVersion(char* rootName);
+static void printVersion();
+static void getBootFile(char* bootFileName);
+static void getPif2BootFile(char* pif2bootFileName);
+static void getRomheaderFile(char* headerFileName);
+static void getFontDataFile(char* fontFileName);
+static char* gloadFindFile(char* fullpath, char* postRootSuffix, char* fname);
+static void doWave(Wave* wave);
+static void nameTempFiles();
+static void unlinkTempFiles();
+static void cleanup(int sig);
+int execCommand(char* s);
+
+int main(int argc, char** argv) {
+    int c;
+    FILE* f;
+    Wave* wave;
+    char* cppCmd;
+    long cppCmdCount;
+    int headerFd;
+    int pif2bootFd;
+    char* bootFileName = NULL;
+    char* headerFileName = NULL;
+    char* pif2bootFileName = NULL;
+    char* fontFileName = NULL;
+    int createRom = 1;
+    char CheckerBuf[0x100];
+    char NameBuf[0x100];
+    char* rootName;
+    int quietMode = 0;
+
     B_1000BA40 = argv[0];
 
-    if ((sp354 = sysconf(1)) == -1) {
+    if ((cppCmdCount = sysconf(1)) == -1) {
         fprintf(stderr, "makerom: sysconf(_SC_ARG_MAX): %s\n", sys_errlist[errno]);
         exit(1);
     }
 
-    if ((sp358 = malloc(sp354)) == NULL) {
+    if ((cppCmd = malloc(cppCmdCount)) == NULL) {
         fprintf(stderr, "malloc failed\n");
         return -1;
     }
 
-    sprintf(sp358, "/usr/lib/cpp -D_LANGUAGE_MAKEROM");
-    sp354 -= strlen(sp358) + 1;
-    while ((sp364 = getopt(argc, argv, "D:I:U:cdeimnor:gb:h:p:s:f:O:C:QqVv")) != -1) {
-        switch (sp364) {
-            case 0x44:
-            case 0x49:
-            case 0x55:
-                sp354 -= strlen(optarg) + 3;
-                if (sp354 <= 0) {
+    sprintf(cppCmd, "/usr/lib/cpp -D_LANGUAGE_MAKEROM");
+    cppCmdCount -= strlen(cppCmd) + 1;
+
+    // Parse options
+    while ((c = getopt(argc, argv, "D:I:U:cdeimnor:gb:h:p:s:f:O:C:QqVv")) != -1) {
+        switch (c) {
+            case 'D':
+            case 'I':
+            case 'U':
+                cppCmdCount -= strlen(optarg) + 3;
+                if (cppCmdCount <= 0) {
                     fprintf(stderr, "makerom: too many -[DIU] flags\n");
                     exit(1);
                 }
-                sprintf(sp358, "%s -%c%s", sp358, sp364, optarg);
+                sprintf(cppCmd, "%s -%c%s", cppCmd, c, optarg);
                 continue;
-            case 0x63:
+
+            case 'c':
                 cosim = 1;
                 continue;
-            case 0x64:
+
+            case 'd':
                 debug = 1;
                 continue;
-            case 0x67:
+
+            case 'g':
                 gcord = 1;
                 continue;
-            case 0x6B:
+
+            case 'k':
                 keep_going = 1;
                 continue;
-            case 0x65:
+
+            case 'e':
                 emulator = 1;
                 continue;
-            case 0x6D:
+
+            case 'm':
                 loadMap = 1;
                 continue;
-            case 0x6E:
+
+            case 'n':
                 nofont = 1;
                 continue;
-            case 0x6F:
+
+            case 'o':
                 D_10009224 = 0;
                 continue;
-            case 0x72:
+
+            case 'r':
                 D_10009220 = optarg;
                 continue;
-            case 0x62:
-                sp348 = optarg;
+
+            case 'b':
+                bootFileName = optarg;
                 continue;
-            case 0x68:
-                sp344 = optarg;
+
+            case 'h':
+                headerFileName = optarg;
                 continue;
-            case 0x70:
-                sp340 = optarg;
+
+            case 'p':
+                pif2bootFileName = optarg;
                 continue;
-            case 0x73:
+
+            case 's':
                 finalromSize = strtol(optarg, 0, 0);
                 continue;
-            case 0x66:
+
+            case 'f':
                 fillData = strtol(optarg, 0, 0);
                 continue;
-            case 0x4F:
+
+            case 'O':
                 offset = strtol(optarg, 0, 0);
                 continue;
-            case 0x43:
+
+            case 'C':
                 changeclock = 1;
                 clockrate = strtol(optarg, 0, 0);
                 if (clockrate == 0) {
-                    clockrate = 0x03A07F50;
+                    clockrate = 60850000;
                 }
                 continue;
-            case 0x3F:
+
+            case '?':
                 usage();
                 exit(1);
-            case 0x51:
-            case 0x71:
-                sp130 = 1;
+
+            case 'Q':
+            case 'q':
+                quietMode = 1;
                 continue;
-            case 0x56:
-            case 0x76:
+
+            case 'V':
+            case 'v':
                 printVersion();
                 exit(1);
         }
     }
 
+    // Check options
     if ((argc - optind) != 1) {
         usage();
         exit(1);
     }
+
     if ((cosim + emulator) > 1) {
+        // "-i"?
         fprintf(stderr, "makerom: only specify one of -c, -e, or -i\n");
         exit(1);
     }
+
     getOsVersion();
-    if (sp130 == 0) {
+    if (!quietMode) {
         printVersion();
     }
-    getBootFile(sp348);
-    getPif2BootFile(sp340);
-    getRomheaderFile(sp344);
-    getFontDataFile(sp33C);
+
+    getBootFile(bootFileName);
+    getPif2BootFile(pif2bootFileName);
+    getRomheaderFile(headerFileName);
+    getFontDataFile(fontFileName);
 
     if ((unlink(D_10009220) == -1) && (errno != 2)) {
         fprintf(stderr, "makerom: %s: %s\n", D_10009220, sys_errlist[errno]);
@@ -229,14 +276,14 @@ int main(int argc, unsigned char** argv) {
     }
     fclose(yyin);
 
-    sp354 -= strlen(fileName);
-    if (sp354 <= 0) {
+    cppCmdCount -= strlen(fileName);
+    if (cppCmdCount <= 0) {
         fprintf(stderr, "makerom: cpp command line too long\n");
         exit(1);
     }
 
-    sprintf(sp358, "%s %s", sp358, fileName);
-    if ((yyin = popen(sp358, "r")) == 0) {
+    sprintf(cppCmd, "%s %s", cppCmd, fileName);
+    if ((yyin = popen(cppCmd, "r")) == 0) {
         fprintf(stderr, "makerom: could not run cpp on %s: %s\n", fileName, sys_errlist[errno]);
         exit(1);
     }
@@ -254,17 +301,17 @@ int main(int argc, unsigned char** argv) {
     }
 
     if (checkSizes() != 0) {
-        sp338 = 0;
+        createRom = 0;
     }
 
-    if ((D_10009224 != 0) && (checkOverlaps() != 0)) {
-        sp338 = 0;
+    if (D_10009224 && checkOverlaps()) {
+        createRom = 0;
     }
 
     nameTempFiles();
-    sigaction(1, &D_10009200, 0);
-    sigaction(2, &D_10009200, 0);
-    sigaction(0xF, &D_10009200, 0);
+    sigaction(SIGHUP, &D_10009200, NULL);
+    sigaction(SIGINT, &D_10009200, NULL);
+    sigaction(SIGTERM, &D_10009200, NULL);
 
     if (debug) {
         printf("Creating segment symbol source file in %s\n", B_1000B540);
@@ -275,71 +322,73 @@ int main(int argc, unsigned char** argv) {
         exit(1);
     }
 
-    for (sp35C = waveList; sp35C != NULL; sp35C = sp35C->next) {
-        doWave(sp35C);
+    for (wave = waveList; wave != NULL; wave = wave->next) {
+        doWave(wave);
     }
 
-    if ((sp134 = getenv("ROOT")) == NULL) {
-        sp134 = "/";
+    if ((rootName = getenv("ROOT")) == NULL) {
+        rootName = "/";
     }
 
-    if (irixVersion > 0) {
-        if (checkIdoVersion(sp134) < 2) {
+    if (irixVersion > IRIX_VERSION_53) {
+        if (checkIdoVersion(rootName) < 2) {
             fprintf(stderr, "makerom: This IDO version is not compatible with the\n");
             fprintf(stderr, "         Nintendo64 development environment on this\n");
             fprintf(stderr, "         version of IRIX.\n");
             exit(1);
         }
-        sprintf(sp238, "%s/usr/sbin/u64check -fmulmul:check:noforce:norepair", sp134);
+        sprintf(CheckerBuf, "%s/usr/sbin/u64check -fmulmul:check:noforce:norepair", rootName);
     } else {
-        sprintf(sp238, "%s/usr/sbin/r4300_check", sp134);
+        sprintf(CheckerBuf, "%s/usr/sbin/r4300_check", rootName);
     }
 
     if (debug) {
         printf("Checking fmulmul status\n");
     }
 
-    for (sp35C = waveList; sp35C != NULL; sp35C = sp35C->next) {
-        sprintf(sp138, "%s %s", &sp238, sp35C->name);
+    for (wave = waveList; wave != NULL; wave = wave->next) {
+        sprintf(NameBuf, "%s %s", CheckerBuf, wave->name);
         if (debug) {
-            printf("  %s\n", sp138);
+            printf("  %s\n", NameBuf);
         }
-        if ((execCommand(sp138) == -1) && !keep_going) {
+        if ((execCommand(NameBuf) == -1) && !keep_going) {
             unlinkTempFiles();
             exit(1);
         }        
     }
 
-    if (gcord != 0) {
-        sprintf(sp238, "%s/usr/lib/PR/gcord ", sp134);
-        for (sp35C = waveList; sp35C != NULL; sp35C = sp35C->next) {
-            sprintf(sp138, "%s %s", sp238, sp35C->name);
+    if (gcord) {
+        sprintf(CheckerBuf, "%s/usr/lib/PR/gcord ", rootName);
+        for (wave = waveList; wave != NULL; wave = wave->next) {
+            char gcordFileBuf[0x100];
+
+            sprintf(NameBuf, "%s %s", CheckerBuf, wave->name);
             if (debug) {
-                printf("makerom: %s\n", sp138);
+                printf("makerom: %s\n", NameBuf);
             }
-            if ((execCommand(sp138) == -1) && !keep_going) {
+            if ((execCommand(NameBuf) == -1) && !keep_going) {
                 unlinkTempFiles();
                 exit(1);
             }
-            strcat(strcpy(sp30, sp35C->name), ".cord");
-            strcpy(sp35C->name, sp30);            
+            strcat(strcpy(gcordFileBuf, wave->name), ".cord");
+            strcpy(wave->name, gcordFileBuf);            
         }
     }
 
     if (debug) {
-        printf("Creating entry source file in %s\n", &B_1000B740);
+        printf("Creating entry source file in %s\n", B_1000B740);
     }
-    if (createEntryFile(&B_1000B740, &B_1000B840) == -1) {
+    if (createEntryFile(B_1000B740, B_1000B840) == -1) {
         unlinkTempFiles();
         exit(1);
     }
 
-    if (sp338 != 0) {
+    if (createRom) {
         if (debug) {
             printf("Extracting sections from ELF wave files");
             printf(" to create ROM image in %s\n", D_10009220);
         }
-        if (createRomImage(D_10009220, &B_1000B840) == -1) {
+        if (createRomImage(D_10009220, B_1000B840) == -1) {
             unlinkTempFiles();
             exit(1);
         }
@@ -355,14 +404,10 @@ int main(int argc, unsigned char** argv) {
         free(fontBuf);
     }
 
-    exit(sp338 ? 0 : 1);
+    exit(createRom ? 0 : 1);
     return 0;
 }
 
-// #pragma GLOBAL_ASM("asm/functions/makerom/usage.s")
-void usage();
-//{
-//}
 void usage(void) {
     fprintf(stderr, "usage: makerom [-D<define>] [-I<dir>] -[U<define>]\n");
     fprintf(stderr, "               [-c] [-n] [-d] [-g] [-e] [-m] [-q] [-v]\n");
@@ -374,15 +419,6 @@ void usage(void) {
     fprintf(stderr, "               [-r romfile] specfile\n");
 }
 
-extern int irixVersion;
-
-// #pragma GLOBAL_ASM("asm/functions/makerom/getOsVersion.s")
-void getOsVersion();
-//{
-//    unsigned char* cmd;
-//    unsigned char buf[4096];
-//    FILE* procPtr;
-//}
 void getOsVersion(void) {
     char* cmd = "/sbin/uname -r";
     char buf[0x1000];
@@ -392,15 +428,15 @@ void getOsVersion(void) {
         fgets(buf, 0x1000, procPtr);
         pclose(procPtr);
         if (strcmp(buf, "5.3\n") == 0) {
-            irixVersion = 0;
+            irixVersion = IRIX_VERSION_53;
         } else if (strcmp(buf, "6.2\n") == 0) {
-            irixVersion = 1;
+            irixVersion = IRIX_VERSION_62;
         } else if (strcmp(buf, "6.3\n") == 0) {
-            irixVersion = 2;
+            irixVersion = IRIX_VERSION_63;
         } else if (strcmp(buf, "6.4\n") == 0) {
-            irixVersion = 3;
+            irixVersion = IRIX_VERSION_64;
         } else {
-            irixVersion = 4;
+            irixVersion = IRIX_VERSION_UNKNOWN;
             fprintf(stderr, "makerom: Operating system not recognized.  Trying 6.x ...\n");
         }
     } else {
@@ -409,17 +445,7 @@ void getOsVersion(void) {
     }
 }
 
-// #pragma GLOBAL_ASM("asm/functions/makerom/checkIdoVersion.s")
-int checkIdoVersion(unsigned char* rootName);
-//{
-//    int u64CheckFound;
-//    int v70Found;
-//    unsigned char cmd[255];
-//    unsigned char buffer[255];
-//    stat statBuffer;
-//    FILE* procPtr;
-//}
-int checkIdoVersion(unsigned char* rootName) {
+int checkIdoVersion(char* rootName) {
     int u64CheckFound;
     int v70Found; // Version 7.0
     char cmd[0x100];
@@ -436,7 +462,7 @@ int checkIdoVersion(unsigned char* rootName) {
     
     // Check if the fourth line of the output of this command contains "7.0"
     sprintf(cmd, "/usr/sbin/showprods -D 1 dev");
-    if ((procPtr = popen(cmd, "r")) != NULL) {
+    if ((procPtr = popen(cmd, "r")) != NULL) { //! @bug `v70Found` used uninitialised if this is false
         fgets(buffer, 0xFF, procPtr);
         fgets(buffer, 0xFF, procPtr);
         fgets(buffer, 0xFF, procPtr);
@@ -463,29 +489,15 @@ int checkIdoVersion(unsigned char* rootName) {
     }
 }
 
-// #pragma GLOBAL_ASM("asm/functions/makerom/printVersion.s")
-void printVersion();
-//{
-//}
 void printVersion(void) {
-    if (irixVersion == 0) {
+    if (irixVersion == IRIX_VERSION_53) {
         printf("Nintendo64 Makerom v2.2 for IRIX.\n");
     } else {
         printf("Nintendo64 Makerom v2.2 -BETA- for IRIX.\n");
     }
 }
 
-int readCoff(unsigned char* fname, unsigned int* buf);
-
-// #pragma GLOBAL_ASM("asm/functions/makerom/getBootFile.s")
-void getBootFile(unsigned char* bootFileName);
-//{
-//    int bootFd;
-//    unsigned char scratchFileName[255];
-//    stat buf;
-//    unsigned char errMessage[255];
-//}
-void getBootFile(unsigned char* bootFileName) {
+void getBootFile(char* bootFileName) {
     int bootFd;
     char scratchFileName[0x100];
     struct stat buf;
@@ -520,16 +532,7 @@ void getBootFile(unsigned char* bootFileName) {
     }
 }
 
-
-// #pragma GLOBAL_ASM("asm/functions/makerom/getPif2BootFile.s")
-void getPif2BootFile(unsigned char* pif2bootFileName);
-//{
-//    int pif2bootFd;
-//    unsigned char scratchFileName[255];
-//    stat buf;
-//    unsigned char errMessage[255];
-//}
-void getPif2BootFile(unsigned char* pif2bootFileName) {
+void getPif2BootFile(char* pif2bootFileName) {
     int pif2bootFd;
     char scratchFileName[0x100];
     struct stat buf;
@@ -564,21 +567,7 @@ void getPif2BootFile(unsigned char* pif2bootFileName) {
     }
 }
 
-
-// #pragma GLOBAL_ASM("asm/functions/makerom/getRomheaderFile.s")
-void getRomheaderFile(unsigned char* headerFileName);
-//{
-//    int headerFd;
-//    unsigned char scratchFileName[255];
-//    stat buf;
-//    unsigned char errMessage[255];
-//    unsigned char nibbleString[2];
-//    int nibbleVal;
-//    int i;
-//    int readPtr;
-//    int retval;
-//}
-void getRomheaderFile(unsigned char* headerFileName) {
+void getRomheaderFile(char* headerFileName) {
     int headerFd;
     char scratchFileName[0x100];
     struct stat buf;
@@ -652,16 +641,7 @@ void getRomheaderFile(unsigned char* headerFileName) {
     }
 }
 
-
-// #pragma GLOBAL_ASM("asm/functions/makerom/getFontDataFile.s")
-void getFontDataFile(unsigned char* fontFileName);
-//{
-//    int fontFd;
-//    unsigned char scratchFileName[255];
-//    stat buf;
-//    unsigned char errMessage[255];
-//}
-void getFontDataFile(unsigned char* fontFileName) {
+void getFontDataFile(char* fontFileName) {
     int fontFd;
     char scratchFileName[0x100];
     struct stat buf;
@@ -702,16 +682,7 @@ void getFontDataFile(unsigned char* fontFileName) {
     }
 }
 
-
-// #pragma GLOBAL_ASM("asm/functions/makerom/gloadFindFile.s")
-unsigned char* gloadFindFile(unsigned char* fullpath, unsigned char* postRootSuffix, unsigned char* fname);
-//{
-//    unsigned char* rootname;
-//    unsigned char* rootpath;
-//    int fd;
-//    int try;
-//}
-unsigned char* gloadFindFile(unsigned char* fullpath, unsigned  char* postRootSuffix, unsigned char* fname) {
+static char* gloadFindFile(char* fullpath, char* postRootSuffix, char* fname) {
     char* rootname;
     char* rootpath;
     int fd; // Unused
@@ -752,14 +723,6 @@ unsigned char* gloadFindFile(unsigned char* fullpath, unsigned  char* postRootSu
     return NULL;
 }
 
-
-int createElspec(Wave*);
-int runLinker(Wave*, unsigned char*, unsigned char*);
-
-// #pragma GLOBAL_ASM("asm/functions/makerom/doWave.s")
-void doWave(Wave* wave);
-//{
-//}
 void doWave(Wave* wave) {
     if (debug) {
         printf("Translating ROM spec file into");
@@ -775,13 +738,6 @@ void doWave(Wave* wave) {
     }
 }
 
-
-// #pragma GLOBAL_ASM("asm/functions/makerom/nameTempFiles.s")
-void nameTempFiles();
-//{
-//    Wave* wave;
-//    unsigned char* tmpdir;
-//}
 void nameTempFiles(void) {
     Wave* wave;
     char* tmpdir;
@@ -810,11 +766,6 @@ void nameTempFiles(void) {
     mktemp(B_1000B940);
 }
 
-// #pragma GLOBAL_ASM("asm/functions/makerom/unlinkTempFiles.s")
-static void unlinkTempFiles();
-//{
-//    Wave* wave;
-//}
 static void unlinkTempFiles(void) {
     Wave* wave;
 
@@ -830,21 +781,12 @@ static void unlinkTempFiles(void) {
     }
 }
 
-// #pragma GLOBAL_ASM("asm/functions/makerom/cleanup.s")
-void cleanup(int sig);
-//{
-//}
 void cleanup(int sig) {
     unlinkTempFiles();
     exit(1);
 }
 
-// #pragma GLOBAL_ASM("asm/functions/makerom/execCommand.s")
-int execCommand(unsigned char* s);
-//{
-//    int status;
-//}
-int execCommand(unsigned char* s) {
+int execCommand(char* s) {
     int status = system(s);
 
     if (status == -1) {
