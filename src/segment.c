@@ -1037,7 +1037,7 @@ int createEntryFile(char* source, char* object) {
             }
             bootStack = (char*)bootStack + bootStackOffset;
 
-            if ((s->bssSize != 0) && (cosim == 0)) {
+            if ((s->bssSize != 0) && !cosim) {
                 if ((segSectName = malloc(strlen(s->name) + 0x10)) == NULL) {
                     fprintf(stderr, "malloc failed\n");
                     return -1;
