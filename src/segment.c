@@ -334,6 +334,83 @@ int sizeRaw(Segment* s);
 //    Path* p;
 //    stat statBuffer;
 //}
+int sizeRaw(Segment* s) {
+    unsigned int address1;
+    unsigned int address2;
+    unsigned int currAddress;
+    int fd;
+    Path* p;
+    struct stat statBuffer;
+
+    s->dataAlign = 0x10;
+
+    s->sectionsExisting = 2;
+
+    for (p = s->pathList; p != NULL; p = p->next) {
+        p->textSize = 0;
+        p->dataSize = 0;
+        p->sdataSize = 0;
+        p->sbssSize = 0;
+        p->bssSize = 0;
+
+        p->textAlign = 0;
+        p->dataAlign = 0x10;
+        p->sdataAlign = 0;
+        p->sbssAlign = 0;
+        p->bssAlign = 0;
+
+        p->sectionsExisting = 2;
+
+        if ((fd = open(p->name, 0)) == -1) {
+            fprintf(stderr, "makerom: %s: %s\n", p->name, sys_errlist[errno]);
+            return -1;
+        }
+        if (fstat(fd, &statBuffer) == -1) {
+            fprintf(stderr, "makerom: lstat failed: %s\n", sys_errlist[errno]);
+            return -1;
+        }
+        s->dataSize += statBuffer.st_size;
+        close(fd);
+    }
+
+    // align to 0x10. TODO: find a better way to write this?
+    s->totalSize = s->dataSize = ((s->dataSize + 0xF) >> 4) << 4;
+
+    switch (s->addrFunc) {
+        case 2:
+            address1 = s->afterSeg1->address + s->afterSeg1->totalSize;
+            address2 = s->afterSeg2->address + s->afterSeg2->totalSize;
+            currAddress = (address1 > address2) ? address1 : address2;
+            break;
+
+        case 3:
+            address1 = s->afterSeg1->address + s->afterSeg1->totalSize;
+            address2 = s->afterSeg2->address + s->afterSeg2->totalSize;
+            currAddress = (address1 < address2) ? address1 : address2;
+            break;
+
+        case 1:
+            address1 = s->afterSeg1->address + s->afterSeg1->totalSize;
+            currAddress = address1;
+            break;
+
+        case 4:
+            currAddress = s->address;
+            break;
+
+        case 5:
+            currAddress = s->address;
+            break;
+
+        default:
+            break;
+    }
+    currAddress = ALIGNn(s->align, currAddress);
+    currAddress = ALIGNn(s->dataAlign, currAddress);
+    s->address = currAddress;
+
+    return 0;
+}
 
 int checkSizes();
 //{
