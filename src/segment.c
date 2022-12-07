@@ -1,10 +1,30 @@
 #include "makerom.h"
+#include "stddef.h"
 
 // makerom.c
 extern Segment* segmentList;
 extern Wave* waveList;
 extern int debug;
-extern int offset;
+extern size_t offset;
+
+extern unsigned int bootAddress;
+extern int changeclock;
+extern unsigned int clockrate;
+extern char fillData;
+extern int finalromSize;
+extern int nofont;
+
+// types unclear
+extern size_t* bootBuf;
+extern char* headerBuf;
+extern size_t* pif2bootBuf;
+extern void* fontBuf;
+
+extern int bootWordAlignedByteSize;     // size_t?
+extern int pif2bootWordAlignedByteSize; // size_t?
+extern int headerWordAlignedByteSize;   // size_t?
+extern int fontdataWordAlignedByteSize;
+
 
 #define SECTION_TEXT (1 << 0)
 #define SECTION_DATA_RODATA (1 << 1)
@@ -553,26 +573,167 @@ int createSegmentSymbols(char* source, char* object) {
     return execCommand(cmd);
 }
 
-int createRomImage(unsigned char* romFile, unsigned char* object);
-//{
-//    FILE* f;
-//    Segment* s;
-//    ptrdiff_t bootStack;
-//    unsigned char* sectName;
-//    size_t romSize;
-//    int fd;
-//    Elf* elf;
-//    Elf32_Ehdr* ehdr;
-//    Elf_Scn* scn;
-//    Elf32_Shdr* shdr;
-//    int index;
-//    int end;
-//    int i;
-//    unsigned char* fillbuffer;
-//    {
-//        int tmp_clock;
-//    }
-//}
+int createRomImage(char* romFile, char* object) {
+    FILE* f;
+    Segment* s;
+    ptrdiff_t bootStack;
+    char* sectName;
+    size_t romSize;
+    int fd;
+    Elf* elf;
+    Elf32_Ehdr* ehdr;
+    Elf_Scn* scn;
+    Elf32_Shdr* shdr;
+    int index;
+    int end;
+    int i;
+    char* fillbuffer;
+
+    if ((fd = open(object, 0)) == -1) {
+        fprintf(stderr, "makerom: %s: %s\n", object, sys_errlist[errno]);
+        return -1;
+    }
+    elf = elf_begin(fd, ELF_C_READ, NULL);
+    ehdr = elf32_getehdr(elf);
+    for (index = 1; index < ehdr->e_shnum; index++) {
+        scn = _elf_getscn(elf, index);
+        shdr = elf32_getshdr(scn);
+        sectName = elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name);
+        if (strcmp(sectName, ".text") == 0) {
+            break;
+        }
+    }
+
+    if (shdr->sh_size > 0x50) {
+        fprintf(stderr, "makerom: entr size %d is larger than %d\n", shdr->sh_size, 0x50);
+        return -1;
+    }
+    if (lseek(fd, shdr->sh_offset, 0) == -1) {
+        fprintf(stderr, "makerom: lseek of entry section failed\n");
+        return -1;
+    }
+    if (read(fd, B_1000BA80, shdr->sh_size) != shdr->sh_size) {
+        fprintf(stderr, "makerom: read of entry section failed\n");
+        return -1;
+    }
+    if (openAouts() != 0) {
+        return -1;
+    }
+    for (s = segmentList; s != NULL; s = s->next) {
+        if (s->flags & 2) {
+            readObject(s);
+        } else if (s->flags & 4) {
+            readRaw(s);
+        }
+        romSize = s->romOffset + s->textSize + s->dataSize + s->sdataSize;
+    }
+
+    if ((f = fopen(romFile, "w+")) == NULL) {
+        fprintf(stderr, "makerom: %s: %s\n", romFile, sys_errlist[errno]);
+        return -1;
+    }
+    if (offset != 0) {
+        if (fseek(f, offset, 0) != 0) {
+            fprintf(stderr, "makerom: %s: fseek error (%s)\n", romFile, sys_errlist[errno]);
+            return -1;
+        }
+    }
+    if (fwrite(headerBuf, 1, headerWordAlignedByteSize, f) != headerWordAlignedByteSize) {
+        fprintf(stderr, "makerom: %s: write error\n", romFile);
+        return -1;
+    }
+
+    if (fseek(f, offset + 8, 0) != 0) {
+        fprintf(stderr, "makerom: %s: fseek error (%s)\n", romFile, sys_errlist[errno]);
+        return -1;
+    }
+    if (fwrite(&bootAddress, 4, 1, f) != 1) {
+        fprintf(stderr, "makerom: %s: write error\n", romFile);
+        return -1;
+    }
+
+    if (changeclock) {
+        int tmp_clock = 0;
+
+        if (fseek(f, offset + 4, 0) != 0) {
+            fprintf(stderr, "makerom: %s: fseek error (%s)\n", romFile, sys_errlist[errno]);
+            return -1;
+        }
+        if (fread(&tmp_clock, 4, 1, f) != 1) {
+            fprintf(stderr, "makerom: %s: read error \n", romFile);
+            return -1;
+        }
+        clockrate |= tmp_clock;
+        if (fseek(f, offset + 4, 0) != 0) {
+            fprintf(stderr, "makerom: %s: fseek error (%s)\n", romFile, sys_errlist[errno]);
+            return -1;
+        }
+        if (fwrite(&clockrate, 4, 1, f) != 1) {
+            fprintf(stderr, "makerom: %s: write error\n", romFile);
+            return -1;
+        }
+    }
+
+    if (fseek(f, offset + 0x40, 0) != 0) {
+        fprintf(stderr, "makerom: %s: fseek error (%s)\n", romFile, sys_errlist[errno]);
+        return -1;
+    }
+    if (fwrite(bootBuf, 1, bootWordAlignedByteSize, f) != bootWordAlignedByteSize) {
+        fprintf(stderr, "makerom: %s: write error\n", romFile);
+        return -1;
+    }
+
+    if (nofont == 0) {
+        if (fseek(f, offset + 0xB70, 0) != 0) {
+            fprintf(stderr, "makerom: %s: fseek error (%s)\n", romFile, sys_errlist[errno]);
+            return -1;
+        }
+        if (fwrite(fontBuf, 1, fontdataWordAlignedByteSize, f) != fontdataWordAlignedByteSize) {
+            fprintf(stderr, "makerom: %s: write error\n", romFile);
+            return -1;
+        }
+    }
+
+    if (fseek(f, offset + 0x1000, 0) != 0) {
+        fprintf(stderr, "makerom: %s: fseek error (%s)\n", romFile, sys_errlist[errno]);
+        return -1;
+    }
+    if (fwrite(B_1000BA80, 1, romSize, f) != romSize) {
+        fprintf(stderr, "makerom: %s: write error\n", romFile);
+        return -1;
+    }
+
+    end = romSize + offset + 0x1000;
+    finalromSize <<= 0x11;
+    if ((finalromSize != 0) && (finalromSize > end)) {
+        if ((fillbuffer = malloc(0x2000)) == NULL) {
+            fprintf(stderr, "malloc failed\n");
+            return -1;
+        }
+
+        for (i = 0; i < 0x2000; i++) {
+            fillbuffer[i] = fillData;
+        }
+
+        while (end < finalromSize) {
+            if ((finalromSize - end) > 0x2000) {
+                if (fwrite(fillbuffer, 1, 0x2000, f) != 0x2000) {
+                    fprintf(stderr, "makerom: %s: write error %x\n", romFile, end);
+                    return -1;
+                }
+                end += 0x2000;
+            } else {
+                if (fwrite(fillbuffer, 1, finalromSize - end, f) != (finalromSize - end)) {
+                    fprintf(stderr, "makerom: %s: write error\n", romFile);
+                    return -1;
+                }
+                end += finalromSize - end;
+            }
+        }
+    }
+
+    return 0;
+}
 
 int openAouts();
 //{

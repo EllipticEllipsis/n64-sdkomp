@@ -63,7 +63,7 @@ int finalromSize = 0; // size_t?
 char fillData = 0xFF;
 int offset = 0;
 int changeclock = 0;
-int clockrate = 0;
+unsigned int clockrate = 0;
 int keep_going = 0;
 
 char* fileName;
