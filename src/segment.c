@@ -640,7 +640,7 @@ int createRomImage(char* romFile, char* object) {
         fprintf(stderr, "makerom: lseek of entry section failed\n");
         return -1;
     }
-    if (read(fd, B_1000BA80, shdr->sh_size) != shdr->sh_size) {
+    if (read(fd, B_1000BA80, shdr->sh_size) != (ssize_t)shdr->sh_size) {
         fprintf(stderr, "makerom: read of entry section failed\n");
         return -1;
     }
@@ -894,7 +894,7 @@ static int readObject(Segment* s) {
         free(segSectName);
         return -1;
     }
-    if (read(s->wave->fd, B_1000BA80 + s->romOffset, shdr->sh_size) != shdr->sh_size) {
+    if (read(s->wave->fd, B_1000BA80 + s->romOffset, shdr->sh_size) != (ssize_t)shdr->sh_size) {
         fprintf(stderr, "makerom: %s: read of section %s failed\n", s->wave->name, segSectName);
         free(segSectName);
         return -1;
@@ -917,7 +917,7 @@ static int readObject(Segment* s) {
         free(segSectName);
         return -1;
     }
-    if (read(s->wave->fd, B_1000BA80 + s->romOffset + s->textSize, shdr->sh_size) != shdr->sh_size) {
+    if (read(s->wave->fd, B_1000BA80 + s->romOffset + s->textSize, shdr->sh_size) != (ssize_t)shdr->sh_size) {
         fprintf(stderr, "makerom: %s: read of section %s failed\n", s->wave->name, segSectName);
         free(segSectName);
         return -1;
@@ -939,7 +939,8 @@ static int readObject(Segment* s) {
         free(segSectName);
         return -1;
     }
-    if (read(s->wave->fd, B_1000BA80 + s->romOffset + s->textSize + s->dataSize, shdr->sh_size) != shdr->sh_size) {
+    if (read(s->wave->fd, B_1000BA80 + s->romOffset + s->textSize + s->dataSize, shdr->sh_size) !=
+        (ssize_t)shdr->sh_size) {
         fprintf(stderr, "makerom: %s: read of section %s failed\n", s->wave->name, segSectName);
         free(segSectName);
         return -1;
@@ -970,7 +971,7 @@ static int readRaw(Segment* s) {
         }
         fileSize = statBuffer.st_size;
         totalSize += fileSize;
-        if (totalSize > s->dataSize) {
+        if ((size_t)totalSize > s->dataSize) {
             fprintf(stderr, "makerom: %s: segment size changed\n", s->name);
             return -1;
         }
