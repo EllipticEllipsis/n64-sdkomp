@@ -2,19 +2,20 @@
 
 // makerom.c
 extern Segment* segmentList;
+extern int debug;
+
+#define SECTION_TEXT (1 << 0)
+#define SECTION_DATA_RODATA (1 << 1)
+#define SECTION_SDATA (1 << 2)
+#define SECTION_BSS (1 << 3)
+#define SECTION_SBSS (1 << 4)
 
 // static unsigned char* romImage;
 static char* B_1000BA80; // romImage
 
-int scanSegments();
-//{
-//    Segment* s;
-//    unsigned int offset;
-//    int rom_size;
-//}
 int scanSegments(void) {
     Segment* s;
-    size_t offset = 0x50;
+    unsigned int offset = 0x50;
     int rom_size;
 
     if (elf_version(1) == 0) {
@@ -53,22 +54,276 @@ int scanSegments(void) {
     return 0;
 }
 
+int sizeObject(Segment* s) {
+    unsigned int address1;
+    unsigned int address2;
+    int fd;
+    Elf* elf;
+    Elf_Scn* scn;
+    Elf32_Ehdr* ehdr;
+    Elf32_Shdr* shdr;
+    Path* p;
+    size_t index;
+    char* sectName;
+    int currAddress;
+    int firstSection = 1;
 
-int sizeObject(Segment* s);
-//{
-//    unsigned int address1;
-//    unsigned int address2;
-//    int fd;
-//    Elf* elf;
-//    Elf_Scn* scn;
-//    Elf32_Ehdr* ehdr;
-//    Elf32_Shdr* shdr;
-//    Path* p;
-//    size_t index;
-//    unsigned char* sectName;
-//    int currAddress;
-//    int firstSection;
-//}
+    s->textAlign = 0x10;
+    if (debug) {
+        if ((s->align != 0x10) && (s->align != 0)) {
+            printf("Segment %s: alignment %x\n", s->name, s->align);
+        }
+        if ((s->romalign != 0x10) && (s->romalign != 0)) {
+            printf("Segment %s: romalign %x\n", s->name, s->romalign);
+        }
+    }
+
+    for (p = s->pathList; p != NULL; p = p->next) {
+        p->textSize = 0;
+        p->dataSize = 0;
+        p->sdataSize = 0;
+        p->sbssSize = 0;
+        p->bssSize = 0;
+        p->textAlign = 0;
+        p->dataAlign = 0;
+        p->sdataAlign = 0;
+        p->sbssAlign = 0;
+        p->bssAlign = 0;
+
+        if ((fd = open(p->name, 0)) == -1) {
+            fprintf(stderr, "makerom: %s: %s\n", p->name, sys_errlist[errno]);
+            return -1;
+        }
+
+        if (debug) {
+            printf("Scanning %s\n", p->name);
+        }
+
+        elf = elf_begin(fd, ELF_C_READ, NULL);
+        if ((elf_kind(elf) != ELF_K_ELF) || ((ehdr = elf32_getehdr(elf)) == NULL)) {
+            fprintf(stderr, "makerom: %s: not a valid ELF object file\n", p->name);
+            return -1;
+        }
+
+        for (index = 1; index < ehdr->e_shnum; index++) {
+            if (((scn = _elf_getscn(elf, index)) == NULL) || ((shdr = elf32_getshdr(scn)) == NULL)) {
+                fprintf(stderr, "makerom: %s: can't get section index %d\n", p->name, index);
+                return -1;
+            }
+            sectName = elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name);
+            if (sectName == NULL) {
+                fprintf(stderr, "makerom: %s: detect unnamed section\n", p->name);
+                return -1;
+            }
+            if (strcmp(sectName, ".text") == 0) {
+                s->textSize += shdr->sh_size;
+                p->textAlign = shdr->sh_addralign;
+                p->textSize = shdr->sh_size;
+                p->sectionsExisting |= SECTION_TEXT;
+                s->sectionsExisting |= SECTION_TEXT;
+                if (p->textAlign > s->textAlign) {
+                    s->textAlign = p->textAlign;
+                }
+                if (debug) {
+                    printf("  text size  = %x\n", shdr->sh_size);
+                    printf("       align = %x\n", shdr->sh_addralign);
+                }
+            } else if ((strcmp(sectName, ".data") == 0) || (strcmp(sectName, ".rodata") == 0)) {
+                s->dataSize += shdr->sh_size;
+                p->dataAlign = shdr->sh_addralign;
+                p->dataSize += shdr->sh_size;
+                p->sectionsExisting |= SECTION_DATA_RODATA;
+                s->sectionsExisting |= SECTION_DATA_RODATA;
+                if (p->dataAlign > s->dataAlign) {
+                    s->dataAlign = p->dataAlign;
+                }
+                if (debug) {
+                    printf("  data&rodata size  = %x\n", shdr->sh_size);
+                    printf("       align = %x\n", shdr->sh_addralign);
+                }
+            } else if (strcmp(sectName, ".sdata") == 0) {
+                s->sdataSize += shdr->sh_size;
+                p->sdataAlign = shdr->sh_addralign;
+                p->sdataSize = shdr->sh_size;
+                s->sectionsExisting |= SECTION_SDATA;
+                p->sectionsExisting |= SECTION_SDATA;
+                if (p->sdataAlign > s->sdataAlign) {
+                    s->sdataAlign = p->sdataAlign;
+                }
+                if (debug) {
+                    printf("  sdata size  = %x\n", shdr->sh_size);
+                    printf("        align = %x\n", shdr->sh_addralign);
+                }
+            } else if (strcmp(sectName, ".sbss") == 0) {
+                s->sbssSize += shdr->sh_size;
+                p->sbssAlign = shdr->sh_addralign;
+                p->sbssSize = shdr->sh_size;
+                p->sectionsExisting |= SECTION_SBSS;
+                s->sectionsExisting |= SECTION_SBSS;
+                if (p->sbssAlign > s->sbssAlign) {
+                    s->sbssAlign = p->sbssAlign;
+                }
+                if (debug) {
+                    printf("  sbss size  = %x\n", shdr->sh_size);
+                    printf("       align = %x\n", shdr->sh_addralign);
+                }
+            } else if (strcmp(sectName, ".bss") == 0) {
+                s->bssSize += shdr->sh_size;
+                p->bssAlign = shdr->sh_addralign;
+                p->bssSize = shdr->sh_size;
+                p->sectionsExisting |= SECTION_BSS;
+                s->sectionsExisting |= SECTION_BSS;
+                if (p->bssAlign > s->bssAlign) {
+                    s->bssAlign = p->bssAlign;
+                }
+                if (debug) {
+                    printf("  bss size  = %x\n", shdr->sh_size);
+                    printf("      align = %x\n", shdr->sh_addralign);
+                }
+            }
+        }
+        close(fd);
+    }
+
+    switch (s->addrFunc) {
+        case 2:
+            address1 = s->afterSeg1->address + s->afterSeg1->totalSize;
+            address2 = s->afterSeg2->address + s->afterSeg2->totalSize;
+            currAddress = (address1 > address2) ? address1 : address2;
+            break;
+
+        case 3:
+            address1 = s->afterSeg1->address + s->afterSeg1->totalSize;
+            address2 = s->afterSeg2->address + s->afterSeg2->totalSize;
+            currAddress = (address1 < address2) ? address1 : address2;
+            break;
+
+        case 1:
+            address1 = s->afterSeg1->address + s->afterSeg1->totalSize;
+            currAddress = address1;
+            break;
+
+        case 4:
+            currAddress = s->address;
+            break;
+
+        case 5:
+            currAddress = s->address;
+            break;
+
+        default:
+            break;
+    }
+    currAddress = ALIGNn(s->align, currAddress);
+    s->address = currAddress;
+    if (s->flags & 1) {
+        currAddress = ALIGNn(s->textAlign, currAddress);
+        s->romOffset = ALIGNn(s->textAlign, s->romOffset);
+        s->romOffset = ALIGNn(s->align, s->romOffset);
+    }
+
+    if (s->sectionsExisting & SECTION_TEXT) {
+        currAddress = ALIGNn(s->textAlign, currAddress);
+        s->textStart = currAddress;
+        s->address = currAddress;
+        firstSection = 0;
+
+        for (p = s->pathList; p != NULL; p = p->next) {
+            if (p->sectionsExisting & SECTION_TEXT) {
+                currAddress = ALIGNn(p->textAlign, currAddress);
+                p->textStart = currAddress;
+                currAddress += p->textSize;
+            }
+        }
+    } else {
+        s->textStart = currAddress;
+    }
+
+    if (s->sectionsExisting & SECTION_DATA_RODATA) {
+        currAddress = ALIGNn(s->dataAlign, currAddress);
+        s->dataStart = currAddress;
+        if (firstSection) {
+            s->address = currAddress;
+            firstSection = 0;
+        }
+
+        for (p = s->pathList; p != NULL; p = p->next) {
+            if (p->sectionsExisting & SECTION_DATA_RODATA) {
+                currAddress = ALIGNn(p->dataAlign, currAddress);
+                p->dataStart = currAddress;
+                currAddress += p->dataSize;
+            }
+        }
+    } else {
+        s->dataStart = currAddress;
+    }
+
+    if (s->sectionsExisting & SECTION_SDATA) {
+        currAddress = ALIGNn(s->sdataAlign, currAddress);
+        s->sdataStart = currAddress;
+        if (firstSection) {
+            s->address = currAddress;
+            firstSection = 0;
+        }
+
+        for (p = s->pathList; p != NULL; p = p->next) {
+            if (p->sectionsExisting & SECTION_SDATA) {
+                currAddress = ALIGNn(p->sdataAlign, currAddress);
+                p->sdataStart = currAddress;
+                currAddress += p->sdataSize;
+            }
+        }
+    } else {
+        s->sdataStart = currAddress;
+    }
+
+    if (s->sectionsExisting & SECTION_SBSS) {
+        currAddress = ALIGNn(s->sbssAlign, currAddress);
+        s->sbssStart = currAddress;
+        if (firstSection) {
+            s->address = currAddress;
+            firstSection = 0;
+        }
+
+        for (p = s->pathList; p != NULL; p = p->next) {
+            if (p->sectionsExisting & SECTION_SBSS) {
+                currAddress = ALIGNn(p->sbssAlign, currAddress);
+                p->sbssStart = currAddress;
+                currAddress += p->sbssSize;
+            }
+        }
+    } else {
+        s->sbssStart = currAddress;
+    }
+
+    if (s->sectionsExisting & SECTION_BSS) {
+        currAddress = ALIGNn(s->bssAlign, currAddress);
+        s->bssStart = currAddress;
+        if (firstSection) {
+            s->address = currAddress;
+            firstSection = 0;
+        }
+
+        for (p = s->pathList; p != NULL; p = p->next) {
+            if (p->sectionsExisting & SECTION_BSS) {
+                currAddress = ALIGNn(p->bssAlign, currAddress);
+                p->bssStart = currAddress;
+                currAddress += p->bssSize;
+            }
+        }
+    } else {
+        s->bssStart = currAddress;
+    }
+
+    s->textSize = s->dataStart - s->address;
+    s->dataSize = s->sdataStart - s->dataStart;
+    s->sdataSize = s->sbssStart - s->sdataStart;
+    s->sbssSize = s->bssStart - s->sbssStart;
+    s->bssSize = currAddress - s->bssStart;
+    s->totalSize = currAddress - s->address;
+
+    return 0;
+}
 
 int sizeRaw(Segment* s);
 //{
