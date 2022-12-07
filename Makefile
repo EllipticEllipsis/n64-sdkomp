@@ -29,5 +29,6 @@ check:
 	$(CHECK_CMD) src/makerom.c
 	$(CHECK_CMD) src/elspec.c
 	$(CHECK_CMD) src/segment.c
+	$(CHECK_CMD) src/coff.c
 
 .PHONY: all setup disasm check

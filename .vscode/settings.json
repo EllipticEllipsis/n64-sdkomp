@@ -6,6 +6,7 @@
         "makerom.h": "c",
         "sgidefs.h": "c",
         "siginfo.h": "c",
-        "signal.h": "c"
+        "signal.h": "c",
+        "obj.h": "c"
     }
 }
