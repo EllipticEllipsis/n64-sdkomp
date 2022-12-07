@@ -13,6 +13,7 @@ extern unsigned int clockrate;
 extern char fillData;
 extern int finalromSize;
 extern int nofont;
+extern int gcord;
 
 // types unclear
 extern size_t* bootBuf;
@@ -24,7 +25,6 @@ extern int bootWordAlignedByteSize;     // size_t?
 extern int pif2bootWordAlignedByteSize; // size_t?
 extern int headerWordAlignedByteSize;   // size_t?
 extern int fontdataWordAlignedByteSize;
-
 
 #define SECTION_TEXT (1 << 0)
 #define SECTION_DATA_RODATA (1 << 1)
@@ -735,22 +735,68 @@ int createRomImage(char* romFile, char* object) {
     return 0;
 }
 
-int openAouts();
-//{
-//    Wave* wave;
-//    unsigned char gcordFileBuf[256];
-//}
+int openAouts(void) {
+    Wave* wave;
+    char gcordFileBuf[0x100];
 
-void* lookupSymbol(Wave* wave, unsigned char* name);
-//{
-//    Elf_Scn* scn;
-//    Elf32_Shdr* shdr;
-//    Elf_Data* data;
-//    Elf32_Sym* sym;
-//    size_t index;
-//    int i;
-//    int count;
-//}
+    for (wave = waveList; wave != NULL; wave = wave->next) {
+        if (gcord) {
+            strcat(strcpy(gcordFileBuf, wave->name), ".cord");
+        } else {
+            strcpy(gcordFileBuf, wave->name);
+        }
+
+        if ((wave->fd = open(wave->name, 0)) == -1) {
+            fprintf(stderr, "makerom: %s: %s\n", wave->name, sys_errlist[errno]);
+            return -1;
+        }
+
+        wave->elf = elf_begin(wave->fd, ELF_C_READ, NULL);
+        if ((elf_kind(wave->elf) != ELF_K_ELF) || ((wave->ehdr = elf32_getehdr(wave->elf)) == NULL)) {
+            fprintf(stderr, "makerom: %s: not a valid ELF object file\n", wave->name);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+void* lookupSymbol(Wave* wave, char* name) {
+    Elf_Scn* scn;
+    Elf32_Shdr* shdr;
+    Elf_Data* data;
+    Elf32_Sym* sym;
+    size_t index;
+    int i;
+    int count;
+
+    for (index = 1; index < wave->ehdr->e_shnum; index++) {
+        if (((scn = _elf_getscn(wave->elf, index)) == NULL) || ((shdr = elf32_getshdr(scn)) == NULL)) {
+            return NULL;
+        }
+        if (shdr->sh_type != 2) {
+            continue;
+        }
+
+        data = NULL;
+        if ((data = elf_getdata(scn, data)) == NULL) {
+            return NULL;
+        }
+
+        count = data->d_size / sizeof(Elf32_Sym);
+        sym = data->d_buf;
+        sym++;
+
+        for (i = 1; i < count; i++) {
+            if (strcmp(name, elf_strptr(wave->elf, shdr->sh_link, sym->st_name)) == 0) {
+                return sym->st_value;
+            }
+            sym++;
+        }
+    }
+
+    return NULL;
+}
 
 Elf32_Shdr* lookupShdr(Wave* wave, unsigned char* segSectName);
 //{
@@ -789,6 +835,9 @@ int createEntryFile(unsigned char* source, unsigned char* object);
 //    unsigned char romsymbol[14];
 //}
 
-unsigned int ALIGNn(unsigned int romalign, int n);
-//{
-//}
+unsigned int ALIGNn(unsigned int romalign, int n) {
+    if (romalign == 0) {
+        romalign = 0x10;
+    }
+    return (((n + romalign) - 1) / romalign) * romalign;
+}
