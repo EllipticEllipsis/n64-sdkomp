@@ -262,6 +262,7 @@ static int sizeObject(Segment* s) {
             break;
 
         default:
+            //! @bug `currAddress` is used uninitialised if this is taken
             break;
     }
     currAddress = ALIGNn(s->align, currAddress);
@@ -444,6 +445,7 @@ static int sizeRaw(Segment* s) {
             break;
 
         default:
+            //! @bug `currAddress` is used uninitialised if this is taken
             break;
     }
     currAddress = ALIGNn(s->align, currAddress);
