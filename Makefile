@@ -25,10 +25,24 @@ DEFINES = -D_MIPS_FPSET=16 -D_MIPS_ISA=2 -D_ABIO32=1 -D_MIPS_SIM=_ABIO32 -D_MIPS
 
 CHECK_CMD = $(CHECK_CC) $(CHECK_FLAGS) $(IINC) $(CHECK_WARNINGS_ON) $(CHECK_WARNINGS_OFF) $(DEFINES)
 
+CC         := ./tools/recomp/build/7.1/out/cc 
+C_FLAGS    := -KPIC -Xcpluscomm
+MIPS_LEVEL := -mips2
+OPT_FLAGS  := -g 
+
+BUILD_CMD := $(CC) $(IINC) $(C_FLAGS) $(MIPS_LEVEL) $(OPT_FLAGS)
+
 check:
 	$(CHECK_CMD) src/makerom.c
 	$(CHECK_CMD) src/elspec.c
 	$(CHECK_CMD) src/segment.c
 	$(CHECK_CMD) src/coff.c
 
-.PHONY: all setup disasm check
+build:
+	mkdir -p build/src
+	$(BUILD_CMD) src/makerom.c -c -o build/src/makerom.o
+	$(BUILD_CMD) src/elspec.c -c -o build/src/elspec.o
+	$(BUILD_CMD) src/segment.c -c -o build/src/segment.o
+	$(BUILD_CMD) src/coff.c -c -o build/src/coff.o
+
+.PHONY: all setup disasm check build

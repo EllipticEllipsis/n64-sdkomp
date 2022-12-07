@@ -16,10 +16,6 @@ int createEntryFile(char* source, char* object);
 
 int yyparse();
 
-extern int optind;
-extern char* optarg;
-extern FILE* yyin;
-
 // Data and bss
 
 // static const sigaction_t act;
@@ -55,22 +51,19 @@ static char* B_1000BA40;         // progName
 Segment* segmentList = NULL;
 Wave* waveList = NULL;
 
-int debug = 0;
-int cosim = 0;
-int emulator = 0;
-int nofont = 0;
-int finalromSize = 0; // size_t?
-char fillData = 0xFF;
-int offset = 0;
-int changeclock = 0;
-unsigned int clockrate = 0;
-int keep_going = 0;
-
 char* fileName;
 char* bootEntryName;
 char* bootStackName;
-// size_t bootStackOffset;
+int bootStackOffset;
+
+int debug = 0;
+int cosim = 0;
+int emulator = 0;
+
 int loadMap;
+
+int nofont = 0;
+
 int gcord;
 
 // Types of all these are not clear as yet
@@ -84,6 +77,12 @@ int pif2bootWordAlignedByteSize; // size_t?
 int headerWordAlignedByteSize;   // size_t?
 int fontdataWordAlignedByteSize;
 
+int finalromSize = 0; // size_t?
+char fillData = 0xFF;
+int offset = 0;
+int changeclock = 0;
+unsigned int clockrate = 0;
+
 // Have to use defines since an enum would show up in mdebug
 #define IRIX_VERSION_53 0
 #define IRIX_VERSION_62 1
@@ -92,6 +91,15 @@ int fontdataWordAlignedByteSize;
 #define IRIX_VERSION_UNKNOWN 4
 
 int irixVersion;
+
+extern FILE* yyin; // ?
+
+int keep_going = 0;
+
+
+
+
+
 
 static void usage();
 static void getOsVersion();

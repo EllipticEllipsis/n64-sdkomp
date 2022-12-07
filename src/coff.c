@@ -4,6 +4,9 @@
 unsigned int Address;
 unsigned int Data0;
 unsigned int Data1;
+
+int Swap = 0;
+
 char* OFileName;
 char* AFileName; // Unused
 char* SName;
@@ -11,7 +14,6 @@ struct ldfile* LDPtr;
 struct scnhdr SHeader;
 int AFile; // Unused
 
-int Swap = 0;
 
 static int Extract(unsigned int* buf);
 
@@ -78,5 +80,6 @@ static int Extract(unsigned int* buf) {
         }
     }
     ldclose(LDPtr);
+
     return SHeader.s_size;
 }
