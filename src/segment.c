@@ -4,6 +4,7 @@
 extern Segment* segmentList;
 extern Wave* waveList;
 extern int debug;
+extern int offset;
 
 #define SECTION_TEXT (1 << 0)
 #define SECTION_DATA_RODATA (1 << 1)
@@ -487,12 +488,70 @@ int checkOverlaps(void) {
     return isOverlap;
 }
 
-int createSegmentSymbols(unsigned char* source, unsigned char* object);
-//{
-//    FILE* f;
-//    Segment* s;
-//    unsigned char* cmd;
-//}
+int createSegmentSymbols(char* source, char* object) {
+    FILE* f;
+    Segment* s;
+    char* cmd;
+
+    if ((f = fopen(source, "w")) == NULL) {
+        fprintf(stderr, "makerom: %s: cannot create\n", source);
+        return -1;
+    }
+
+    for (s = segmentList; s != NULL; s = s->next) {
+        fprintf(f, ".globl _%sSegmentRomStart; ", s->name);
+        fprintf(f, "_%sSegmentRomStart = 0x%08x\n", s->name, s->romOffset + offset + 0x1000);
+        fprintf(f, ".globl _%sSegmentRomEnd; ", s->name);
+        fprintf(f, "_%sSegmentRomEnd = 0x%08x\n", s->name,
+                s->romOffset + offset + s->textSize + s->dataSize + s->sdataSize + 0x1000);
+
+        if (s->flags & 2) {
+            fprintf(f, ".globl _%sSegmentStart; ", s->name);
+            fprintf(f, "_%sSegmentStart = 0x%08x\n", s->name, s->address);
+
+            if (s->textSize != 0) {
+                fprintf(f, ".globl _%sSegmentTextStart; ", s->name);
+                fprintf(f, "_%sSegmentTextStart = 0x%08x\n", s->name, s->textStart);
+                fprintf(f, ".globl _%sSegmentTextEnd; ", s->name);
+                fprintf(f, "_%sSegmentTextEnd = 0x%08x\n", s->name, s->textStart + s->textSize);
+            }
+
+            if ((s->dataSize + s->sdataSize) != 0) {
+                fprintf(f, ".globl _%sSegmentDataStart; ", s->name);
+                fprintf(f, "_%sSegmentDataStart = 0x%08x\n", s->name, s->dataStart);
+                fprintf(f, ".globl _%sSegmentDataEnd; ", s->name);
+                fprintf(f, "_%sSegmentDataEnd = 0x%08x\n", s->name, s->dataStart + s->dataSize + s->sdataSize);
+            }
+
+            if ((s->bssSize + s->sbssSize) != 0) {
+                fprintf(f, ".globl _%sSegmentBssStart; ", s->name);
+                fprintf(f, "_%sSegmentBssStart = 0x%08x\n", s->name, s->sbssStart);
+                fprintf(f, ".globl _%sSegmentBssEnd; ", s->name);
+                fprintf(f, "_%sSegmentBssEnd = 0x%08x\n", s->name, s->sbssStart + s->sbssSize + s->bssSize);
+            }
+
+            fprintf(f, ".globl _%sSegmentEnd; ", s->name);
+            fprintf(f, "_%sSegmentEnd = 0x%08x\n", s->name, s->bssStart + s->bssSize);
+        }
+    }
+    fclose(f);
+
+    if ((cmd = malloc(sysconf(1))) == NULL) {
+        fprintf(stderr, "malloc failed\n");
+        return -1;
+    }
+
+    strcpy(cmd, "$TOOLROOT/usr/bin/cc -c -non_shared -o ");
+    strcat(cmd, object);
+    strcat(cmd, " ");
+    strcat(cmd, source);
+
+    if (debug) {
+        printf("  %s\n", cmd);
+    }
+
+    return execCommand(cmd);
+}
 
 int createRomImage(unsigned char* romFile, unsigned char* object);
 //{
