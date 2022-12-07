@@ -325,15 +325,6 @@ int sizeObject(Segment* s) {
     return 0;
 }
 
-int sizeRaw(Segment* s);
-//{
-//    unsigned int address1;
-//    unsigned int address2;
-//    unsigned int currAddress;
-//    int fd;
-//    Path* p;
-//    stat statBuffer;
-//}
 int sizeRaw(Segment* s) {
     unsigned int address1;
     unsigned int address2;
@@ -412,11 +403,43 @@ int sizeRaw(Segment* s) {
     return 0;
 }
 
-int checkSizes();
-//{
-//    Segment* s;
-//    int sizeViolation;
-//}
+int checkSizes(void) {
+    Segment* s;
+    int sizeViolation = 0;
+
+    for (s = segmentList; s != NULL; s = s->next) {
+        if ((s->flags & 1) && ((s->textSize + s->dataSize + s->sdataSize) > 0x100000)) {
+            fprintf(stderr, "makerom: segment \"%s\" (text+data) size ", s->name);
+            fprintf(stderr, "(%d+%d) = %d (0x%x)\n         ",
+                    s->textSize,                              // (%d  text
+                    s->dataSize + s->sdataSize,               // +%d) data
+                    s->textSize + s->dataSize + s->sdataSize, // = %d total (rom)
+                    s->textSize + s->dataSize + s->sdataSize  // (0x%x)
+            );
+            fprintf(stderr, "exceeds maximum BOOT segment size %d (0x%x)\n", 0x100000, 0x100000);
+            sizeViolation = 1;
+        }
+
+        if (s->totalSize > s->maxSize) {
+            fprintf(stderr, "makerom: segment \"%s\" (text+data+bss) size ", s->name);
+            fprintf(stderr, "(%d+%d+%d) = %d (0x%x)\n         ",
+                    s->textSize,                // (%d  text
+                    s->dataSize + s->sdataSize, // +%d  total data
+                    s->bssSize + s->sbssSize,   // +%d) total bss
+                    s->totalSize,               // = %d total (ram)
+                    s->totalSize                // (0x%x)
+            );
+            fprintf(stderr, "exceeds given maximum segment size %d (0x%x)\n", s->maxSize, s->maxSize);
+            sizeViolation = 1;
+        }
+    }
+
+    if (sizeViolation) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
 
 int checkOverlaps();
 //{
