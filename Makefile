@@ -26,5 +26,6 @@ CHECK_CMD = $(CHECK_CC) $(CHECK_FLAGS) $(IINC) $(CHECK_WARNINGS_ON) $(CHECK_WARN
 check:
 	$(CHECK_CMD) src/makerom.c
 	$(CHECK_CMD) src/elspec.c
+	$(CHECK_CMD) src/segment.c
 
 .PHONY: all setup disasm check
