@@ -14,6 +14,11 @@ extern char fillData;
 extern int finalromSize;
 extern int nofont;
 extern int gcord;
+extern int cosim;
+
+extern char* bootEntryName;
+extern char* bootStackName;
+extern int bootStackOffset;
 
 // types unclear
 extern size_t* bootBuf;
@@ -45,7 +50,7 @@ int scanSegments(void) {
         return -1;
     }
     for (s = segmentList; s != NULL; s = s->next) {
-        if (s->unk0C == 0) {
+        if (s->wave == NULL) {
             fprintf(stderr, "makerom: segment \"%s\": not found in any wave\n", s->name);
             return -1;
         }
@@ -822,18 +827,104 @@ int readRaw(Segment* s);
 //    stat statBuffer;
 //}
 
-int createEntryFile(unsigned char* source, unsigned char* object);
-//{
-//    Segment* s;
-//    FILE* f;
-//    unsigned char* cmd;
-//    unsigned char* segSectName;
-//    void* BssStart;
-//    Wave* wave;
-//    void* bootEntry;
-//    void* bootStack;
-//    unsigned char romsymbol[14];
-//}
+int createEntryFile(char* source, char* object) {
+    Segment* s;
+    FILE* f;
+    char* cmd;
+    char* segSectName;
+    void* BssStart;
+    Wave* wave;
+    void* bootEntry = NULL;
+    void* bootStack = NULL;
+    char romsymbol[14] = "__osFinalrom";
+
+    if ((f = fopen(source, "w")) == NULL) {
+        fprintf(stderr, "makerom: %s: cannot create\n", source);
+        return -1;
+    }
+    for (s = segmentList; s != NULL; s = s->next) {
+        if (s->flags & 1) {
+            wave = s->wave;
+            if ((wave->fd = open(wave->name, 0)) == -1) {
+                fprintf(stderr, "makerom: %s: %s\n", wave->name, sys_errlist[errno]);
+                return -1;
+            }
+
+            wave->elf = elf_begin(wave->fd, ELF_C_READ, NULL);
+            if ((elf_kind(wave->elf) != ELF_K_ELF) || ((wave->ehdr = elf32_getehdr(wave->elf)) == NULL)) {
+                fprintf(stderr, "makerom: %s: not a valid ELF object file\n", wave->name);
+                return -1;
+            }
+
+            if ((finalromSize != 0) && (lookupSymbol(s->wave, romsymbol) == NULL)) {
+                fprintf(stderr, "makerom: use libultra_rom.a to build real game cassette\n");
+                return -1;
+            }
+
+            if (bootEntryName != NULL) {
+                bootEntry = lookupSymbol(s->wave, bootEntryName);
+                if (bootEntry == NULL) {
+                    fprintf(stderr, "makerom: %s: cannot find entry symbol %s\n", s->wave->name, bootEntryName);
+                    return -1;
+                }
+            }
+
+            if (bootStackName != NULL) {
+                if ((bootStack = lookupSymbol(s->wave, bootStackName)) == NULL) {
+                    fprintf(stderr, "makerom: %s: cannot find stack symbol %s\n", s->wave->name, bootStackName);
+                    return -1;
+                }
+            } else {
+                bootStack = NULL;
+            }
+            bootStack = (char*)bootStack + bootStackOffset;
+
+            if ((s->bssSize != 0) && (cosim == 0)) {
+                if ((segSectName = malloc(strlen(s->name) + 0x10)) == NULL) {
+                    fprintf(stderr, "malloc failed\n");
+                    return -1;
+                }
+                sprintf(segSectName, "_%sSegmentBssStart", s->name);
+                BssStart = lookupSymbol(s->wave, segSectName);
+                fprintf(f, " la\t$8 0x%x\n", BssStart);
+                fprintf(f, " li\t$9 0x%x\n", s->bssSize);
+                fprintf(f, "1:\n");
+                fprintf(f, " sw $0, 0($8)\n");
+                fprintf(f, " sw $0, 4($8)\n");
+                fprintf(f, " addi $8, 8\n");
+                fprintf(f, " addi $9, 0xfff8\n");
+                fprintf(f, " bne  $9, $0, 1b\n");
+            }
+            if (bootStack != NULL) {
+                fprintf(f, " la\t$29 0x%x\n", bootStack);
+            }
+            if (bootEntry != NULL) {
+                fprintf(f, " la $10  0x%x\n", bootEntry);
+                fprintf(f, " j $10\n");
+            }
+        }
+    }
+
+    free(segSectName);
+    fclose(f);
+
+    if ((cmd = malloc(sysconf(1))) == NULL) {
+        fprintf(stderr, "malloc failed\n");
+        return -1;
+    }
+
+    strcpy(cmd, "$TOOLROOT/usr/bin/cc -c -non_shared -o ");
+    strcat(cmd, object);
+    strcat(cmd, " ");
+    strcat(cmd, source);
+
+    if (debug) {
+        printf("Compiling entry source file\n");
+        printf("  %s\n", cmd);
+    }
+
+    return execCommand(cmd);
+}
 
 unsigned int ALIGNn(unsigned int romalign, int n) {
     if (romalign == 0) {
