@@ -2,6 +2,7 @@
 
 // makerom.c
 extern Segment* segmentList;
+extern Wave* waveList;
 extern int debug;
 
 #define SECTION_TEXT (1 << 0)
@@ -441,15 +442,50 @@ int checkSizes(void) {
     }
 }
 
-int checkOverlaps();
-//{
-//    Wave* w;
-//    SegmentChain* sc;
-//    SegmentChain* tc;
-//    Segment* s;
-//    Segment* t;
-//    int isOverlap;
-//}
+#define TO_PHYSICAL(addr) ((unsigned int)(addr)&0x1FFFFFFF)
+/**
+ * Looks through each wave, and for each segment in that wave's segmentChain, checks that it does not overlap with any
+ * segments listed later in the chain, that is, denoting the memory s uses by - and the memory t uses by +, something
+ * like the following occurs: mem address ->
+ *  -------
+ *      ++++++++
+ * The condition checks that
+ * - the end of s is to the right of the start of t, and
+ * - the end of t is to the right of the start of s.
+ * the first failing implies s is entirely to the left of t, the second failing implies t is entirely to the right of s,
+ * and the only remaining possibility is that s and t overlap.
+ */
+int checkOverlaps(void) {
+    Wave* w;
+    SegmentChain* sc;
+    SegmentChain* tc;
+    Segment* s;
+    Segment* t;
+    int isOverlap;
+
+    isOverlap = 0;
+
+    for (w = waveList; w != NULL; w = w->next) {
+        for (sc = w->segmentChain; sc != NULL; sc = sc->next) {
+            for (tc = sc->next; tc != NULL; tc = tc->next) {
+                s = sc->segment;
+                t = tc->segment;
+                if ((s->address >= 0x80000000) && (s->address < 0xC0000000) && // in kseg0/kseg1
+                    (t->address >= 0x80000000) && (t->address < 0xC0000000) && // in kseg0/kseg1
+                    ((TO_PHYSICAL(s->address) + s->totalSize) > TO_PHYSICAL(t->address)) &&
+                    ((TO_PHYSICAL(t->address) + t->totalSize) > TO_PHYSICAL(s->address))) {
+                    fprintf(stderr, "makerom: segment \"%s\" [0x%x, 0x%x) overlaps with\n", s->name, s->address,
+                            s->address + s->totalSize);
+                    fprintf(stderr, "         segment \"%s\" [0x%x, 0x%x)\n", t->name, t->address,
+                            t->address + t->totalSize);
+                    fprintf(stderr, "         in wave \"%s\"\n", w->name);
+                    isOverlap = 1;
+                }
+            }
+        }
+    }
+    return isOverlap;
+}
 
 int createSegmentSymbols(unsigned char* source, unsigned char* object);
 //{
