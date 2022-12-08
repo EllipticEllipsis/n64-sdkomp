@@ -80,11 +80,11 @@ int scanSegments(void) {
 
         s->romOffset = offset;
 
-        if (s->flags & 2) {
+        if (s->flags & SEG_FLAG_OBJECT) {
             if (sizeObject(s) == -1) {
                 return -1;
             }
-        } else if (s->flags & 4) {
+        } else if (s->flags & SEG_FLAG_RAW) {
             if (sizeRaw(s) == -1) {
                 return -1;
             }
@@ -96,7 +96,7 @@ int scanSegments(void) {
     }
 
     rom_size = (offset > 0x50) ? offset : 0x50;
-    B_1000BA80 = calloc(rom_size, 1);
+    B_1000BA80 = calloc(rom_size, sizeof(char));
     if (B_1000BA80 == NULL) {
         fprintf(stderr, "makerom: malloc failed [RomSize= %d kB]\n", (rom_size + 0x3FF) / 0x400);
         return -1;
@@ -140,7 +140,7 @@ static int sizeObject(Segment* s) {
         p->sbssAlign = 0;
         p->bssAlign = 0;
 
-        if ((fd = open(p->name, 0)) == -1) {
+        if ((fd = open(p->name, O_RDONLY)) == -1) {
             fprintf(stderr, "makerom: %s: %s\n", p->name, sys_errlist[errno]);
             return -1;
         }
@@ -267,7 +267,7 @@ static int sizeObject(Segment* s) {
     }
     currAddress = ALIGNn(s->align, currAddress);
     s->address = currAddress;
-    if (s->flags & 1) {
+    if (s->flags & SEG_FLAG_BOOT) {
         currAddress = ALIGNn(s->textAlign, currAddress);
         s->romOffset = ALIGNn(s->textAlign, s->romOffset);
         s->romOffset = ALIGNn(s->align, s->romOffset);
@@ -386,7 +386,7 @@ static int sizeRaw(Segment* s) {
 
     s->dataAlign = 0x10;
 
-    s->sectionsExisting = 2;
+    s->sectionsExisting = SECTION_DATA_RODATA;
 
     for (p = s->pathList; p != NULL; p = p->next) {
         p->textSize = 0;
@@ -401,9 +401,9 @@ static int sizeRaw(Segment* s) {
         p->sbssAlign = 0;
         p->bssAlign = 0;
 
-        p->sectionsExisting = 2;
+        p->sectionsExisting = SECTION_DATA_RODATA;
 
-        if ((fd = open(p->name, 0)) == -1) {
+        if ((fd = open(p->name, O_RDONLY)) == -1) {
             fprintf(stderr, "makerom: %s: %s\n", p->name, sys_errlist[errno]);
             return -1;
         }
@@ -460,7 +460,7 @@ int checkSizes(void) {
     int sizeViolation = 0;
 
     for (s = segmentList; s != NULL; s = s->next) {
-        if ((s->flags & 1) && ((s->textSize + s->dataSize + s->sdataSize) > 0x100000)) {
+        if ((s->flags & SEG_FLAG_BOOT) && ((s->textSize + s->dataSize + s->sdataSize) > 0x100000)) {
             fprintf(stderr, "makerom: segment \"%s\" (text+data) size ", s->name);
             fprintf(stderr, "(%d+%d) = %d (0x%x)\n         ",
                     s->textSize,                              // (%d  text
@@ -555,7 +555,7 @@ int createSegmentSymbols(char* source, char* object) {
         fprintf(f, "_%sSegmentRomEnd = 0x%08x\n", s->name,
                 s->romOffset + offset + s->textSize + s->dataSize + s->sdataSize + 0x1000);
 
-        if (s->flags & 2) {
+        if (s->flags & SEG_FLAG_OBJECT) {
             fprintf(f, ".globl _%sSegmentStart; ", s->name);
             fprintf(f, "_%sSegmentStart = 0x%08x\n", s->name, s->address);
 
@@ -586,7 +586,7 @@ int createSegmentSymbols(char* source, char* object) {
     }
     fclose(f);
 
-    if ((cmd = malloc(sysconf(1))) == NULL) {
+    if ((cmd = malloc(sysconf(_SC_ARG_MAX))) == NULL) {
         fprintf(stderr, "malloc failed\n");
         return -1;
     }
@@ -619,7 +619,7 @@ int createRomImage(char* romFile, char* object) {
     int i;
     char* fillbuffer;
 
-    if ((fd = open(object, 0)) == -1) {
+    if ((fd = open(object, O_RDONLY)) == -1) {
         fprintf(stderr, "makerom: %s: %s\n", object, sys_errlist[errno]);
         return -1;
     }
@@ -650,9 +650,9 @@ int createRomImage(char* romFile, char* object) {
         return -1;
     }
     for (s = segmentList; s != NULL; s = s->next) {
-        if (s->flags & 2) {
+        if (s->flags & SEG_FLAG_OBJECT) {
             readObject(s);
-        } else if (s->flags & 4) {
+        } else if (s->flags & SEG_FLAG_RAW) {
             readRaw(s);
         }
         romSize = s->romOffset + s->textSize + s->dataSize + s->sdataSize;
@@ -776,7 +776,7 @@ static int openAouts(void) {
             strcpy(gcordFileBuf, wave->name);
         }
 
-        if ((wave->fd = open(wave->name, 0)) == -1) {
+        if ((wave->fd = open(wave->name, O_RDONLY)) == -1) {
             fprintf(stderr, "makerom: %s: %s\n", wave->name, sys_errlist[errno]);
             return -1;
         }
@@ -963,7 +963,7 @@ static int readRaw(Segment* s) {
     totalSize = 0;
     offset = s->romOffset;
     for (p = s->pathList; p != NULL; p = p->next) {
-        if ((fd = open(p->name, 0)) == -1) {
+        if ((fd = open(p->name, O_RDONLY)) == -1) {
             fprintf(stderr, "makerom: %s: %s\n", p->name, sys_errlist[errno]);
             return -1;
         }
@@ -1004,9 +1004,9 @@ int createEntryFile(char* source, char* object) {
         return -1;
     }
     for (s = segmentList; s != NULL; s = s->next) {
-        if (s->flags & 1) {
+        if (s->flags & SEG_FLAG_BOOT) {
             wave = s->wave;
-            if ((wave->fd = open(wave->name, 0)) == -1) {
+            if ((wave->fd = open(wave->name, O_RDONLY)) == -1) {
                 fprintf(stderr, "makerom: %s: %s\n", wave->name, sys_errlist[errno]);
                 return -1;
             }
@@ -1069,7 +1069,7 @@ int createEntryFile(char* source, char* object) {
     free(segSectName);
     fclose(f);
 
-    if ((cmd = malloc(sysconf(1))) == NULL) {
+    if ((cmd = malloc(sysconf(_SC_ARG_MAX))) == NULL) {
         fprintf(stderr, "malloc failed\n");
         return -1;
     }

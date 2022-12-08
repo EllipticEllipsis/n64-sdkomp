@@ -22,8 +22,8 @@ int createElspec(Wave* wave) {
     for (sc = wave->segmentChain; sc != NULL; sc = sc->next) {
         s = sc->segment;
 
-        // ?
-        if (!(s->flags & 2)) {
+        // Skip any segments that are not OBJECTs
+        if (!(s->flags & SEG_FLAG_OBJECT)) {
             continue;
         }
 
@@ -121,7 +121,7 @@ int runLinker(Wave* wave, char* symbolFile, char* objListFile) {
     Path* p;
     FILE* objfd;
 
-    if ((cmd = malloc(sysconf(1))) == NULL) {
+    if ((cmd = malloc(sysconf(_SC_ARG_MAX))) == NULL) {
         fprintf(stderr, "malloc failed\n");
         return -1;
     }
@@ -143,7 +143,7 @@ int runLinker(Wave* wave, char* symbolFile, char* objListFile) {
     for (sc = wave->segmentChain; sc != NULL; sc = sc->next) {
         s = sc->segment;
 
-        if (!(s->flags & 2)) {
+        if (!(s->flags & SEG_FLAG_OBJECT)) {
             continue;
         }
 

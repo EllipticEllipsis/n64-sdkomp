@@ -100,3 +100,26 @@ typedef struct Wave_s {
     /* 0x114 */ int fd;
     /* 0x118 */ size_t searchIndex;
 } Wave;
+
+/* Defines for Segment.flags */
+// Include BOOT, OBJECT, RAW
+
+/**
+ * boot segment
+ * - Check size < 0x100000 (checkSizes())
+ * - Carry out further alignment (sizeObject())
+ * - find entry symbol and stack symbol, attach entrypoint to it (createEntryFile())
+ */
+#define SEG_FLAG_BOOT (1 << 0)
+
+/**
+ * object, viz. an ELF object file. Uses readObject() and sizeObject(),
+ * - adds to elfspec for linking,
+ * - adds position symbols for starts and ends of nonempty sectionsc.
+ */
+#define SEG_FLAG_OBJECT (1 << 1)
+
+/**
+ * raw binary data of some kind, uses readRaw() and sizeRaw(). (Apparently) on by default
+ */
+#define SEG_FLAG_RAW (1 << 2)

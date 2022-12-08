@@ -16,37 +16,37 @@ int createEntryFile(char* source, char* object);
 
 int yyparse();
 
+// This file
+static void usage();
+static void getOsVersion();
+static int checkIdoVersion(char* rootName);
+static void printVersion();
+static void getBootFile(char* bootFileName);
+static void getPif2BootFile(char* pif2bootFileName);
+static void getRomheaderFile(char* headerFileName);
+static void getFontDataFile(char* fontFileName);
+static char* gloadFindFile(char* fullpath, char* postRootSuffix, char* fname);
+static void doWave(Wave* wave);
+static void nameTempFiles();
+static void unlinkTempFiles();
+static void cleanup(int sig);
+int execCommand(char* s);
+
 // Data and bss
 
-// static const sigaction_t act;
+// D_10009200
+static const sigaction_t act = { 0, cleanup, { { 0, 0, 0, 0 } }, { 0, 0 } };
 
-// static char segmentSymbolSource[255];
+static char segmentSymbolSource[255]; // B_1000B540
+static char segmentSymbolObject[255]; // B_1000B640
+static char entrySource[255];         // B_1000B740
+static char entryObject[255];         // B_1000B840
+static char objectListFile[255];      // B_1000B940
 
-// static char segmentSymbolObject[255];
+static char* romFile = "rom"; // D_10009220
+static int checkOverlap = 1;  // D_10009224
 
-// static char entrySource[255];
-
-// static char entryObject[255];
-
-// static char objectListFile[255];
-
-// static char romFile[] = "rom";
-
-// static int checkOverlap = 1;
-
-// static char* progName;
-
-static sigaction_t D_10009200 = { 0 }; // Need to correct
-
-static char B_1000B540[0x100]; // segmentSymbolSource
-static char B_1000B640[0x100]; // segmentSymbolObject
-static char B_1000B740[0x100]; // entrySource
-static char B_1000B840[0x100]; // entryObject
-static char B_1000B940[0x100]; // objectListFile
-
-static char* D_10009220 = "rom"; // romFile
-static int D_10009224 = 1;       // checkOverlap
-static char* B_1000BA40;         // progName
+static char* progName;        // B_1000BA40
 
 Segment* segmentList = NULL;
 Wave* waveList = NULL;
@@ -96,26 +96,6 @@ extern FILE* yyin; // ?
 
 int keep_going = 0;
 
-
-
-
-
-
-static void usage();
-static void getOsVersion();
-static int checkIdoVersion(char* rootName);
-static void printVersion();
-static void getBootFile(char* bootFileName);
-static void getPif2BootFile(char* pif2bootFileName);
-static void getRomheaderFile(char* headerFileName);
-static void getFontDataFile(char* fontFileName);
-static char* gloadFindFile(char* fullpath, char* postRootSuffix, char* fname);
-static void doWave(Wave* wave);
-static void nameTempFiles();
-static void unlinkTempFiles();
-static void cleanup(int sig);
-int execCommand(char* s);
-
 int main(int argc, char** argv) {
     int c;
     FILE* f;
@@ -129,14 +109,14 @@ int main(int argc, char** argv) {
     char* pif2bootFileName = NULL;
     char* fontFileName = NULL;
     int createRom = 1;
-    char CheckerBuf[0x100];
-    char NameBuf[0x100];
+    char CheckerBuf[255];
+    char NameBuf[255];
     char* rootName;
     int quietMode = 0;
 
-    B_1000BA40 = argv[0];
+    progName = argv[0];
 
-    if ((cppCmdCount = sysconf(1)) == -1) {
+    if ((cppCmdCount = sysconf(_SC_ARG_MAX)) == -1) {
         fprintf(stderr, "makerom: sysconf(_SC_ARG_MAX): %s\n", sys_errlist[errno]);
         exit(1);
     }
@@ -192,11 +172,11 @@ int main(int argc, char** argv) {
                 continue;
 
             case 'o':
-                D_10009224 = 0;
+                checkOverlap = 0;
                 continue;
 
             case 'r':
-                D_10009220 = optarg;
+                romFile = optarg;
                 continue;
 
             case 'b':
@@ -227,7 +207,7 @@ int main(int argc, char** argv) {
                 changeclock = 1;
                 clockrate = strtol(optarg, 0, 0);
                 if (clockrate == 0) {
-                    clockrate = 60850000;
+                    clockrate = 60850000; // 0x03A07F50
                 }
                 continue;
 
@@ -269,8 +249,8 @@ int main(int argc, char** argv) {
     getRomheaderFile(headerFileName);
     getFontDataFile(fontFileName);
 
-    if ((unlink(D_10009220) == -1) && (errno != 2)) {
-        fprintf(stderr, "makerom: %s: %s\n", D_10009220, sys_errlist[errno]);
+    if ((unlink(romFile) == -1) && (errno != ENOENT)) {
+        fprintf(stderr, "makerom: %s: %s\n", romFile, sys_errlist[errno]);
         exit(1);
     }
 
@@ -309,20 +289,21 @@ int main(int argc, char** argv) {
         createRom = 0;
     }
 
-    if (D_10009224 && checkOverlaps()) {
+    if (checkOverlap && checkOverlaps()) {
         createRom = 0;
     }
 
     nameTempFiles();
-    sigaction(SIGHUP, &D_10009200, NULL);
-    sigaction(SIGINT, &D_10009200, NULL);
-    sigaction(SIGTERM, &D_10009200, NULL);
+
+    sigaction(SIGHUP, &act, NULL);
+    sigaction(SIGINT, &act, NULL);
+    sigaction(SIGTERM, &act, NULL);
 
     if (debug) {
-        printf("Creating segment symbol source file in %s\n", B_1000B540);
+        printf("Creating segment symbol source file in %s\n", segmentSymbolSource);
     }
 
-    if (createSegmentSymbols(B_1000B540, B_1000B640) == -1) {
+    if (createSegmentSymbols(segmentSymbolSource, segmentSymbolObject) == -1) {
         unlinkTempFiles();
         exit(1);
     }
@@ -365,7 +346,7 @@ int main(int argc, char** argv) {
     if (gcord) {
         sprintf(CheckerBuf, "%s/usr/lib/PR/gcord ", rootName);
         for (wave = waveList; wave != NULL; wave = wave->next) {
-            char gcordFileBuf[0x100];
+            char gcordFileBuf[255];
 
             sprintf(NameBuf, "%s %s", CheckerBuf, wave->name);
             if (debug) {
@@ -381,9 +362,9 @@ int main(int argc, char** argv) {
     }
 
     if (debug) {
-        printf("Creating entry source file in %s\n", B_1000B740);
+        printf("Creating entry source file in %s\n", entrySource);
     }
-    if (createEntryFile(B_1000B740, B_1000B840) == -1) {
+    if (createEntryFile(entrySource, entryObject) == -1) {
         unlinkTempFiles();
         exit(1);
     }
@@ -391,13 +372,14 @@ int main(int argc, char** argv) {
     if (createRom) {
         if (debug) {
             printf("Extracting sections from ELF wave files");
-            printf(" to create ROM image in %s\n", D_10009220);
+            printf(" to create ROM image in %s\n", romFile);
         }
-        if (createRomImage(D_10009220, B_1000B840) == -1) {
+        if (createRomImage(romFile, entryObject) == -1) {
             unlinkTempFiles();
             exit(1);
         }
     }
+
     unlinkTempFiles();
     if (bootBuf != NULL) {
         free(bootBuf);
@@ -453,8 +435,8 @@ void getOsVersion(void) {
 int checkIdoVersion(char* rootName) {
     int u64CheckFound;
     int v70Found; // Version 7.0
-    char cmd[0x100];
-    char buffer[0x100];
+    char cmd[255];
+    char buffer[255];
     struct stat statBuffer;
     FILE* procPtr;
 
@@ -468,10 +450,10 @@ int checkIdoVersion(char* rootName) {
     // Check if the fourth line of the output of this command contains "7.0"
     sprintf(cmd, "/usr/sbin/showprods -D 1 dev");
     if ((procPtr = popen(cmd, "r")) != NULL) { //! @bug `v70Found` used uninitialised if this is false
-        fgets(buffer, 0xFF, procPtr);
-        fgets(buffer, 0xFF, procPtr);
-        fgets(buffer, 0xFF, procPtr);
-        fgets(buffer, 0xFF, procPtr);
+        fgets(buffer, 255, procPtr);
+        fgets(buffer, 255, procPtr);
+        fgets(buffer, 255, procPtr);
+        fgets(buffer, 255, procPtr);
         pclose(procPtr);
         if (strstr(buffer, "7.0") != NULL) {
             v70Found = 1;
@@ -504,21 +486,21 @@ void printVersion(void) {
 
 void getBootFile(char* bootFileName) {
     int bootFd;
-    char scratchFileName[0x100];
+    char scratchFileName[255];
     struct stat buf;
-    char errMessage[0x100];
+    char errMessage[255];
 
     if ((bootFileName == NULL) && (gloadFindFile(scratchFileName, "/usr/lib/PR", "Boot") != NULL)) {
         bootFileName = scratchFileName;
     }
     if (bootFileName != NULL) {
-        if ((bootFd = open(bootFileName, 0x800)) < 0) {
-            sprintf(errMessage, "%s: unable to open %s", B_1000BA40, bootFileName);
+        if ((bootFd = open(bootFileName, O_NOCTTY)) < 0) {
+            sprintf(errMessage, "%s: unable to open %s", progName, bootFileName);
             perror(errMessage);
             exit(1);
         }
         if (fstat(bootFd, &buf) < 0) {
-            sprintf(errMessage, "%s unable to stat %s", B_1000BA40, bootFileName);
+            sprintf(errMessage, "%s unable to stat %s", progName, bootFileName);
             perror(errMessage);
             close(bootFd);
             exit(1);
@@ -526,7 +508,7 @@ void getBootFile(char* bootFileName) {
 
         bootBuf = malloc(buf.st_size);
         if (bootBuf == NULL) {
-            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", B_1000BA40, buf.st_size);
+            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", progName, buf.st_size);
             close(bootFd);
             exit(1);
         }
@@ -539,21 +521,21 @@ void getBootFile(char* bootFileName) {
 
 void getPif2BootFile(char* pif2bootFileName) {
     int pif2bootFd;
-    char scratchFileName[0x100];
+    char scratchFileName[255];
     struct stat buf;
-    char errMessage[0x100];
+    char errMessage[255];
 
     if ((pif2bootFileName == NULL) && (gloadFindFile(scratchFileName, "/usr/lib/PR", "pif2Boot") != NULL)) {
         pif2bootFileName = scratchFileName;
     }
     if (pif2bootFileName != NULL) {
-        if ((pif2bootFd = open(pif2bootFileName, 0x800)) < 0) {
-            sprintf(errMessage, "%s: unable to open %s", B_1000BA40, pif2bootFileName);
+        if ((pif2bootFd = open(pif2bootFileName, O_NOCTTY)) < 0) {
+            sprintf(errMessage, "%s: unable to open %s", progName, pif2bootFileName);
             perror(errMessage);
             exit(1);
         }
         if (fstat(pif2bootFd, &buf) < 0) {
-            sprintf(errMessage, "%s unable to stat %s", B_1000BA40, pif2bootFileName);
+            sprintf(errMessage, "%s unable to stat %s", progName, pif2bootFileName);
             perror(errMessage);
             close(pif2bootFd);
             exit(1);
@@ -561,7 +543,7 @@ void getPif2BootFile(char* pif2bootFileName) {
 
         pif2bootBuf = malloc(buf.st_size);
         if (pif2bootBuf == NULL) {
-            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", B_1000BA40, buf.st_size);
+            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", progName, buf.st_size);
             close(pif2bootFd);
             exit(1);
         }
@@ -574,9 +556,9 @@ void getPif2BootFile(char* pif2bootFileName) {
 
 void getRomheaderFile(char* headerFileName) {
     int headerFd;
-    char scratchFileName[0x100];
+    char scratchFileName[255];
     struct stat buf;
-    char errMessage[0x100];
+    char errMessage[255];
     char nibbleString[2];
     int nibbleVal;
     int i;
@@ -587,13 +569,13 @@ void getRomheaderFile(char* headerFileName) {
         headerFileName = scratchFileName;
     }
     if (headerFileName != NULL) {
-        if ((headerFd = open(headerFileName, 0x800)) < 0) {
-            sprintf(errMessage, "%s unable to open %s", B_1000BA40, headerFileName);
+        if ((headerFd = open(headerFileName, O_NOCTTY)) < 0) {
+            sprintf(errMessage, "%s unable to open %s", progName, headerFileName);
             perror(errMessage);
             exit(1);
         }
         if (fstat(headerFd, &buf) < 0) {
-            sprintf(errMessage, "%s unable to stat %s", B_1000BA40, headerFileName);
+            sprintf(errMessage, "%s unable to stat %s", progName, headerFileName);
             perror(errMessage);
             close(headerFd);
             exit(1);
@@ -601,7 +583,7 @@ void getRomheaderFile(char* headerFileName) {
         headerWordAlignedByteSize = buf.st_size;
         headerBuf = malloc(headerWordAlignedByteSize);
         if (headerBuf == NULL) {
-            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", B_1000BA40, headerWordAlignedByteSize);
+            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", progName, headerWordAlignedByteSize);
             close(headerFd);
             exit(1);
         }
@@ -610,17 +592,17 @@ void getRomheaderFile(char* headerFileName) {
         for (i = 0, readPtr = 0; readPtr < headerWordAlignedByteSize; i++, readPtr++) {
             retval = read(headerFd, nibbleString, 1);
             if (retval != 1) {
-                fprintf(stderr, "%s: short read from %s.\n", B_1000BA40, headerFileName);
+                fprintf(stderr, "%s: short read from %s.\n", progName, headerFileName);
                 free(headerBuf);
                 close(headerFd);
                 exit(1);
             }
 
-            if (nibbleString[0] == 0xA) {
+            if (nibbleString[0] == '\n') {
                 if (++readPtr < headerWordAlignedByteSize) {
                     retval = read(headerFd, nibbleString, 1);
                     if (retval != 1) {
-                        fprintf(stderr, "%s: short read from %s.\n", B_1000BA40, headerFileName);
+                        fprintf(stderr, "%s: short read from %s.\n", progName, headerFileName);
                         free(headerBuf);
                         close(headerFd);
                         exit(1);
@@ -648,21 +630,21 @@ void getRomheaderFile(char* headerFileName) {
 
 void getFontDataFile(char* fontFileName) {
     int fontFd;
-    char scratchFileName[0x100];
+    char scratchFileName[255];
     struct stat buf;
-    char errMessage[0x100];
+    char errMessage[255];
 
     if (gloadFindFile(scratchFileName, "/usr/lib/PR", "font") != NULL) {
         fontFileName = scratchFileName;
     }
     if (fontFileName != NULL) {
-        if ((fontFd = open(fontFileName, 0x800)) < 0) {
-            sprintf(errMessage, "%s: unable to open %s", B_1000BA40, fontFileName);
+        if ((fontFd = open(fontFileName, O_NOCTTY)) < 0) {
+            sprintf(errMessage, "%s: unable to open %s", progName, fontFileName);
             perror(errMessage);
             exit(1);
         }
         if (fstat(fontFd, &buf) < 0) {
-            sprintf(errMessage, "%s unable to stat %s", B_1000BA40, fontFileName);
+            sprintf(errMessage, "%s unable to stat %s", progName, fontFileName);
             perror(errMessage);
             close(fontFd);
             exit(1);
@@ -670,13 +652,13 @@ void getFontDataFile(char* fontFileName) {
 
         fontBuf = malloc(buf.st_size);
         if (fontBuf == NULL) {
-            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", B_1000BA40, buf.st_size);
+            fprintf(stderr, "%s: unable to malloc buffer to hold %d bytes\n", progName, buf.st_size);
             close(fontFd);
             exit(1);
         }
         fontdataWordAlignedByteSize = buf.st_size;
         if (read(fontFd, fontBuf, fontdataWordAlignedByteSize) != fontdataWordAlignedByteSize) {
-            sprintf(errMessage, "%s unable to read %s", B_1000BA40, fontFileName);
+            sprintf(errMessage, "%s unable to read %s", progName, fontFileName);
             perror(errMessage);
             close(fontFd);
             exit(1);
@@ -719,7 +701,7 @@ static char* gloadFindFile(char* fullpath, char* postRootSuffix, char* fname) {
             strcat(fullpath, "/");
         }
         strcat(fullpath, fname);
-        if (access(fullpath, 4) == 0) {
+        if (access(fullpath, R_OK) == 0) {
             return fullpath;
         }
     }
@@ -737,7 +719,7 @@ void doWave(Wave* wave) {
         unlinkTempFiles();
         exit(1);
     }
-    if ((runLinker(wave, B_1000B640, B_1000B940) == -1) && !keep_going) {
+    if ((runLinker(wave, segmentSymbolObject, objectListFile) == -1) && !keep_going) {
         unlinkTempFiles();
         exit(1);
     }
@@ -755,20 +737,20 @@ void nameTempFiles(void) {
         mktemp(wave->elspecFile);
     }
 
-    sprintf(B_1000B540, "%s/segmentXXXXXX", tmpdir);
-    mktemp(B_1000B540);
-    strcpy(B_1000B640, B_1000B540);
-    strcat(B_1000B540, ".s");
-    strcat(B_1000B640, ".o");
+    sprintf(segmentSymbolSource, "%s/segmentXXXXXX", tmpdir);
+    mktemp(segmentSymbolSource);
+    strcpy(segmentSymbolObject, segmentSymbolSource);
+    strcat(segmentSymbolSource, ".s");
+    strcat(segmentSymbolObject, ".o");
 
-    sprintf(B_1000B740, "%s/entryXXXXXX", tmpdir);
-    mktemp(B_1000B740);
-    strcpy(B_1000B840, B_1000B740);
-    strcat(B_1000B740, ".s");
-    strcat(B_1000B840, ".o");
+    sprintf(entrySource, "%s/entryXXXXXX", tmpdir);
+    mktemp(entrySource);
+    strcpy(entryObject, entrySource);
+    strcat(entrySource, ".s");
+    strcat(entryObject, ".o");
 
-    sprintf(B_1000B940, "%s/objListXXXXXX", tmpdir);
-    mktemp(B_1000B940);
+    sprintf(objectListFile, "%s/objListXXXXXX", tmpdir);
+    mktemp(objectListFile);
 }
 
 static void unlinkTempFiles(void) {
@@ -778,14 +760,15 @@ static void unlinkTempFiles(void) {
         for (wave = waveList; wave != NULL; wave = wave->next) {
             unlink(wave->elspecFile);
         }
-        unlink(B_1000B540);
-        unlink(B_1000B640);
-        unlink(B_1000B740);
-        unlink(B_1000B840);
-        unlink(B_1000B940);
+        unlink(segmentSymbolSource);
+        unlink(segmentSymbolObject);
+        unlink(entrySource);
+        unlink(entryObject);
+        unlink(objectListFile);
     }
 }
 
+// sigaction function
 void cleanup(int sig) {
     unlinkTempFiles();
     exit(1);
