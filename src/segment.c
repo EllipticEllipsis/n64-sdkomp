@@ -35,6 +35,7 @@ int execCommand(char* s);
 
 // Defines
 
+// In theory these could go in makerom.h, but they're only used in this file
 #define SECTION_TEXT (1 << 0)
 #define SECTION_DATA_RODATA (1 << 1)
 #define SECTION_SDATA (1 << 2)
@@ -43,8 +44,7 @@ int execCommand(char* s);
 
 // data/bss
 
-// static unsigned char* romImage;
-static char* B_1000BA80; // romImage
+static char* romImage; // B_1000BA80
 
 // Function declarations
 
@@ -96,8 +96,8 @@ int scanSegments(void) {
     }
 
     rom_size = (offset > 0x50) ? offset : 0x50;
-    B_1000BA80 = calloc(rom_size, sizeof(char));
-    if (B_1000BA80 == NULL) {
+    romImage = calloc(rom_size, sizeof(char));
+    if (romImage == NULL) {
         fprintf(stderr, "makerom: malloc failed [RomSize= %d kB]\n", (rom_size + 0x3FF) / 0x400);
         return -1;
     }
@@ -642,7 +642,7 @@ int createRomImage(char* romFile, char* object) {
         fprintf(stderr, "makerom: lseek of entry section failed\n");
         return -1;
     }
-    if (read(fd, B_1000BA80, shdr->sh_size) != (ssize_t)shdr->sh_size) {
+    if (read(fd, romImage, shdr->sh_size) != (ssize_t)shdr->sh_size) {
         fprintf(stderr, "makerom: read of entry section failed\n");
         return -1;
     }
@@ -728,7 +728,7 @@ int createRomImage(char* romFile, char* object) {
         fprintf(stderr, "makerom: %s: fseek error (%s)\n", romFile, sys_errlist[errno]);
         return -1;
     }
-    if (fwrite(B_1000BA80, 1, romSize, f) != romSize) {
+    if (fwrite(romImage, 1, romSize, f) != romSize) {
         fprintf(stderr, "makerom: %s: write error\n", romFile);
         return -1;
     }
@@ -896,7 +896,7 @@ static int readObject(Segment* s) {
         free(segSectName);
         return -1;
     }
-    if (read(s->wave->fd, B_1000BA80 + s->romOffset, shdr->sh_size) != (ssize_t)shdr->sh_size) {
+    if (read(s->wave->fd, romImage + s->romOffset, shdr->sh_size) != (ssize_t)shdr->sh_size) {
         fprintf(stderr, "makerom: %s: read of section %s failed\n", s->wave->name, segSectName);
         free(segSectName);
         return -1;
@@ -919,7 +919,7 @@ static int readObject(Segment* s) {
         free(segSectName);
         return -1;
     }
-    if (read(s->wave->fd, B_1000BA80 + s->romOffset + s->textSize, shdr->sh_size) != (ssize_t)shdr->sh_size) {
+    if (read(s->wave->fd, romImage + s->romOffset + s->textSize, shdr->sh_size) != (ssize_t)shdr->sh_size) {
         fprintf(stderr, "makerom: %s: read of section %s failed\n", s->wave->name, segSectName);
         free(segSectName);
         return -1;
@@ -941,7 +941,7 @@ static int readObject(Segment* s) {
         free(segSectName);
         return -1;
     }
-    if (read(s->wave->fd, B_1000BA80 + s->romOffset + s->textSize + s->dataSize, shdr->sh_size) !=
+    if (read(s->wave->fd, romImage + s->romOffset + s->textSize + s->dataSize, shdr->sh_size) !=
         (ssize_t)shdr->sh_size) {
         fprintf(stderr, "makerom: %s: read of section %s failed\n", s->wave->name, segSectName);
         free(segSectName);
@@ -977,7 +977,7 @@ static int readRaw(Segment* s) {
             fprintf(stderr, "makerom: %s: segment size changed\n", s->name);
             return -1;
         }
-        if (read(fd, &B_1000BA80[offset], fileSize) != fileSize) {
+        if (read(fd, &romImage[offset], fileSize) != fileSize) {
             fprintf(stderr, "makerom: %s: read failed (%s)\n", p->name, sys_errlist[errno]);
             return -1;
         }

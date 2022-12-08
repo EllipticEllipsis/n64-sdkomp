@@ -115,7 +115,7 @@ typedef struct Wave_s {
 /**
  * object, viz. an ELF object file. Uses readObject() and sizeObject(),
  * - adds to elfspec for linking,
- * - adds position symbols for starts and ends of nonempty sectionsc.
+ * - adds position symbols for starts and ends of nonempty sections.
  */
 #define SEG_FLAG_OBJECT (1 << 1)
 
